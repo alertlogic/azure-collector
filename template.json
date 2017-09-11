@@ -1,0 +1,178 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Name": {
+            "type": "String"
+        },
+        "Storage Name": {
+            "type": "String"
+        },
+        "Alertlogic Access Key Id": {
+            "type": "String"
+        },
+        "Alertlogic Secret Key": {
+            "type": "SecureString"
+        },
+        "Alertlogic API endpoint": {
+            "type": "String",
+            "defaultValue": "api.global-services.global.alertlogic.com",
+            "allowedValues" : [
+                "api.global-services.global.alertlogic.com",
+                "api.global-integration.product.dev.alertlogic.com"
+            ]
+        },
+        "Alertlogic Data Residency": {
+            "type": "String",
+            "defaultValue": "default",
+            "allowedValues": [
+                "default"
+            ]
+        },
+        "Office365 Content Streams": {
+            "type": "Array",
+            "defaultValue": ["Audit.AzureActiveDirectory", "Audit.Exchange", "Audit.SharePoint", "Audit.General"]
+        },
+        "Office365 Tenant Id": {
+            "type": "String"
+        },
+        "App Client Id": {
+            "type": "String"
+        },
+        "App Client Secret": {
+            "type": "SecureString"
+        },
+        "Repository URL": {
+            "type": "String",
+            "defaultValue": "https://github.com/alertlogic/o365-collector.git"
+        },
+        "Repository Branch": {
+            "type": "String",
+            "defaultValue": "master"
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "resourceGroupName": "[resourceGroup().name]",
+        "subscriptionId": "[split(subscription().id, '/')[2]]",
+        "tenantId": "[subscription().tenantId]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "name": "[parameters('name')]",
+            "apiVersion": "2016-03-01",
+            "location": "[variables('location')]",
+            "properties": {
+                "name": "[parameters('name')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('Storage Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Name')), '2015-06-15').key1)]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('Storage Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Name')), '2015-06-15').key1)]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~1"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('Storage Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Name')), '2015-06-15').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[concat(toLower(parameters('name')), '9546')]"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "6.5.0"
+                        },
+                        {
+                            "name": "O365_TENANT_ID",
+                            "value": "[parameters('Office365 Tenant Id')]"
+                        },
+                        {
+                            "name": "O365_CONTENT_STREAMS",
+                            "value": "[string(parameters('Office365 Content Streams'))]"
+                        },
+                        {
+                            "name": "APP_SUBSCRIPTION_ID",
+                            "value": "[variables('subscriptionId')]"
+                        },
+                        {
+                            "name": "APP_RESOURCE_GROUP",
+                            "value": "[variables('resourceGroupName')]"
+                        },
+                        {
+                            "name": "APP_TENANT_ID",
+                            "value": "[variables('tenantId')]"
+                        }
+                    ],
+                    "connectionStrings": [
+                        {
+                            "name": "APP_CLIENT_ID",
+                            "type": "Custom",
+                            "connectionString": "[parameters('App Client Id')]"
+                        },
+                        {
+                            "name": "APP_CLIENT_SECRET",
+                            "type": "Custom",
+                            "connectionString": "[parameters('App Client Secret')]"
+                        },
+                        {
+                            "name": "APP_CI_ACCESS_KEY_ID",
+                            "type": "Custom",
+                            "connectionString": "[parameters('Alertlogic Access Key Id')]"
+                        },
+                        {
+                            "name": "APP_CI_SECRET_KEY",
+                            "type": "Custom",
+                            "connectionString": "[parameters('Alertlogic Secret Key')]"
+                        },
+                        {
+                            "name": "APP_AL_API_ENDPOINT",
+                            "type": "Custom",
+                            "connectionString": "[parameters('Alertlogic API endpoint')]"
+                        },
+                        {
+                            "name": "APP_AL_RESIDENCY",
+                            "type": "Custom",
+                            "connectionString": "[parameters('Alertlogic Data Residency')]"
+                        }
+                    ]
+                },
+                "clientAffinityEnabled": false
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Name'))]"
+            ],
+            "resources": [{
+                "apiVersion": "2015-08-01",
+                "name": "web",
+                "type": "sourcecontrols",
+                "dependsOn": [
+                    "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+                ],
+                "properties": {
+                    "RepoUrl": "[parameters('Repository URL')]",
+                    "branch": "[parameters('Repository Branch')]",
+                    "IsManualIntegration": true
+                }
+            }]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('Storage Name')]",
+            "apiVersion": "2015-06-15",
+            "location": "[variables('location')]",
+            "properties": {
+                "accountType": "Standard_LRS"
+            }
+        }
+    ]
+}

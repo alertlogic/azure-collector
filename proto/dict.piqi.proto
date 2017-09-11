@@ -1,0 +1,24 @@
+package alc_dict;
+
+
+message dict {
+    repeated elem elem = 1;
+}
+
+message elem {
+    required string key = 1;
+    optional value value = 2;
+}
+
+message value {
+    optional dict dict = 1;
+    optional list list = 2;
+    optional string str = 3;
+    optional bool b = 4;
+    optional sint32 i = 5;
+}
+
+message list {
+    repeated value elem = 1;
+}
+

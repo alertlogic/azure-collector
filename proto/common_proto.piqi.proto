@@ -1,0 +1,61 @@
+package common_proto;
+
+import "alc_health.piqi.proto";
+import "host_metadata.piqi.proto";
+
+message collect_input {
+    required string source_id = 1;
+    optional string stream_id = 2;
+    optional bytes previous_stream_state = 3;
+    optional uint32 limit = 4;
+}
+
+message collect_output {
+    required string source_id = 1;
+    optional string stream_id = 2;
+    required bytes new_stream_state = 3;
+    required bool is_end_of_stream = 4;
+    required uint32 collected_events_count = 5;
+    optional uint32 remaining_events_count = 6;
+    optional .alc_health.status_update status = 7;
+}
+
+message collect_error {
+    required string reason = 1;
+    required string source_id = 2;
+    optional string stream_id = 3;
+    optional bool host_wide_error = 4 [default = false];
+    optional .alc_health.status_update status = 5;
+}
+
+message collected_message {
+    optional string hostname = 1;
+    required fixed64 message_ts = 2;
+    required fixed32 priority = 3;
+    optional string prog_name = 4;
+    optional fixed64 pid = 5;
+    required string message = 6;
+    required string message_type = 7;
+    optional string message_type_id = 8;
+    optional fixed32 message_ts_us = 9;
+}
+
+message collected_batch {
+    required string source_id = 1;
+    required .host_metadata.metadata metadata = 2;
+    repeated collected_message message = 3;
+}
+
+message collected_batch_list {
+    repeated collected_batch elem = 1;
+}
+
+message collect_list_input {
+    repeated collect_input sources_list = 1;
+}
+
+message collect_list_output {
+    repeated collect_output collected_sources = 1;
+    repeated collect_error error_sources = 2;
+}
+

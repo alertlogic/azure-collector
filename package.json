@@ -1,0 +1,24 @@
+{
+  "name": "azure_collector",
+  "version": "0.0.1",
+  "dependencies": {
+    "async": "*",
+    "azure": "^2.0.0-preview",
+    "path": "^0.12.7",
+    "protobufjs": "*",
+    "request-promise-native": "^1.0.4"
+  },
+  "scripts": {
+    "local-master": "node ./local_dev/master_local_dev.js",
+    "local-updater": "node ./local_dev/updater_local_dev.js",
+    "local-o365webhook": "node ./local_dev/o365webhook_local_dev.js",
+    "local-aims": "node ./local_dev/aims_token_local_dev.js",
+    "local-ad": "node ./local_dev/ad_token_local_dev.js",
+    "lint": "jshint --exclude \"./node_modules/*\" **/*.js",
+    "test": "npm run lint"
+  },
+  "devDependencies": {
+    "jshint": "^2.9.5",
+    "pre-commit": "^1.2.2"
+  }
+}

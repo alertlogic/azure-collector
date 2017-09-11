@@ -1,0 +1,28 @@
+package alc_health;
+
+
+message status_update {
+    required status status = 1;
+    required uint64 timestamp = 2;
+    repeated status_update_item item = 3;
+}
+
+enum status {
+    STATUS_OK = 0;
+    STATUS_WARNING = 1;
+    STATUS_ERROR = 2;
+    STATUS_OFFLINE = 3;
+    STATUS_NEW = 4;
+}
+
+message status_update_item {
+    required status_update_item_type type = 1;
+    required string details = 2;
+}
+
+enum status_update_item_type {
+    ERROR_UPDATE = 1;
+    WARNING_UPDATE = 2;
+    INFO_UPDATE = 3;
+}
+

@@ -1,0 +1,11 @@
+package host_metadata;
+
+import "dict.piqi.proto";
+
+message metadata {
+    optional string host_uuid = 1;
+    required bytes data_checksum = 2;
+    optional uint64 timestamp = 3;
+    optional .alc_dict.dict data = 4;
+}
+
