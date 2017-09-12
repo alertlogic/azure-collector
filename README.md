@@ -120,6 +120,8 @@ The `Master` function is a timer trigger function which is responcible for:
 - reporting health-checks to the backed;
 - performing log source configuration updates, which happen via Alertlogic UI.
 
+**Note:** When releasing a new version of the collector please remember to increment the version number in
+npm package.json file.  To display the current version locally, issue `npm run local-version`  
 
 ## Updater Function
 
@@ -181,7 +183,6 @@ You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
 
 - Sometimes deployments fail after siteSync action. We need better updater to handle that in order not to wait for 12 hours for the next update attempt.
 - Put correct metadata into log batches.
-- Add collector versioning and consistency checks.
 - Initial Azure Function deployment may take up to 45 minutes.
 
 # Useful Links
