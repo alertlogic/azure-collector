@@ -9,6 +9,7 @@
  */
  
 const m_alServiceC = require('../lib/al_servicec');
+const m_version = require('./version');
 
 /**
  * @class
@@ -54,6 +55,7 @@ class Azcollect extends m_alServiceC.AlServiceC {
     
     checkin(collectorType, collectorId, statusVal, descriptionVal) {
         let statusBody = {
+            collector_version : m_version.getVersion(),
             status : statusVal,
             description : descriptionVal
         };
