@@ -23,7 +23,10 @@ exports.checkRegister = function (context, AlertlogicMasterTimer, azcollectSvc, 
     } else {
         // Collector is not registered.
         azcollectSvc.register_o365().then(resp => {
-            m_appSettings.updateAppsettings({O365_COLLECTOR_ID: resp.source.id}, 
+            let newSettings = {
+                O365_COLLECTOR_ID: resp.source.id
+            };
+            m_appSettings.updateAppsettings(newSettings, 
                 function(settingsError) {
                     if (settingsError) {
                         return callback(settingsError);
