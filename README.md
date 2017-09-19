@@ -79,7 +79,7 @@ curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.
 
 ### Download and Deploy the Custom ARM Template in an Azure Subscription
 
-1. **TODO: it is possible to use URI deployment without downloading a file.** Download an ARM [template](https://github.com/alertlogic/o365-collector/blob/master/template.json)
+1. **TODO: it is possible to use URI deployment without downloading a file.** Download an ARM [template](https://github.com/alertlogic/o365-collector/raw/master/template.json)
 1. Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an acive Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
 1. Go to [Customer Deployment](https://portal.azure.com/#create/Microsoft.Template) page. Type in `deploy` in a seach query located on top of Azure Web UI and select `Deploy a custom template`.
 1. Click `Build your own template in the editor` and load the file previously downloaded on step 1 above.
@@ -102,7 +102,7 @@ You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
 ## Using Azure CLI to deploy a template
 
 1. Follow the installation steps up to (but not including) [Download and Deploy the Custom ARM Template in an Azure Subscription](#download_and_deploy_the_custom_arm_template_in_an_azure_subscription) above.
-1. Download [ARM template](template.json) locally
+1. Download [ARM template](https://github.com/alertlogic/o365-collector/raw/master/template.json) locally
 1. Create a resource group with name "ResourceGroupName" in location "West US" by executing following command
 
 ```
