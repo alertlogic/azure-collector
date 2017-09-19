@@ -69,13 +69,11 @@ var debugEvent = {
             //   "contentExpiration": "2017-08-22T22:47:57.748Z"
             // },
            {
+    "contentUri": "https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20170919042652571002899$20170919042652571002899$audit_exchange$Audit_Exchange",
+    "contentId": "20170919042652571002899$20170919042652571002899$audit_exchange$Audit_Exchange",
     "contentType": "Audit.Exchange",
-    "contentId": "20170905123301777014849$20170905123301777014849$audit_exchange$Audit_Exchange$IsFromNotification",
-    "contentUri": "https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20170905123301777014849$20170905123301777014849$audit_exchange$Audit_Exchange$IsFromNotification",
-    "notificationStatus": "Succeeded",
-    "contentCreated": "2017-09-05T12:37:27.163Z",
-    "notificationSent": "2017-09-05T12:37:27.163Z",
-    "contentExpiration": "2017-09-12T12:33:01.777Z"
+    "contentCreated": "2017-09-19T04:26:52.571Z",
+    "contentExpiration": "2017-09-26T04:26:52.571Z"
   }
         ]
 };
