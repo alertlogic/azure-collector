@@ -17,7 +17,7 @@ Installation requires the following steps:
 1. Download and deploy a custom ARM template to Microsoft Azure to create functions for collecting and managing O365 log data
 1. Verify that installation was successful using Alertlogic CloudDefender UI.
 
-### Register a New O365 Web Application in O365
+## Register a New O365 Web Application in O365
 
 In order to install O365 Log collector:
 
@@ -32,7 +32,7 @@ In order to install O365 Log collector:
 
 1. After application is created select it and make a note of `Application Id`, for example, `a261478c-84fb-42f9-84c2-de050a4babe3`
 
-### Set Up the Required Active Directory Security Permissions
+## Set Up the Required Active Directory Security Permissions
 
 1. On the `Settings` panel and select `Required permissions` and click `+Add`
 1. Hit `Select an API` and chose `Office 365 Management APIs`, click `Select`
@@ -41,7 +41,7 @@ In order to install O365 Log collector:
 1. On the `Settings` panel of the application and select `Keys`.
 1. Enter key `Description` and `Duration` and click `Save`. **Note**, please save the key value, it is needed later during template deployment.
 
-### Create an Alert Logic Access Key
+## Create an Alert Logic Access Key
 
 Login and get an authentication token from the Alert Logic Cloud Insight product [AIMS API](https://console.product.dev.alertlogic.com/api/aims/).  For example, from the command line use [curl](https://en.wikipedia.org/wiki/CURL) as follows (where `<user>` is your CloudInsight user and `<pwd>` is your CloudInsight password):
 
@@ -76,8 +76,9 @@ delete some keys in order to create new ones.  Use the following command to dele
 curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.alertlogic.com/aims/v1/<ACCOUNT_ID>/users/<USER_ID>/access_keys/<ACCESS_KEY_ID>
 ```
 
+## Function deployment
 
-### Download and Deploy the Custom ARM Template in an Azure Subscription
+### Deploy via the Custom ARM Template in an Azure Subscription
 
 1. **TODO: it is possible to use URI deployment without downloading a file.** Download an ARM [template](https://github.com/alertlogic/o365-collector/raw/master/template.json)
 1. Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an acive Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
@@ -95,28 +96,31 @@ You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
 1. Once deployment is finished go to `Resource groups` blade and select a resource group used for the deployment on step 3 above.
 1. Select `Access Control (IAM)` and add `Website Contributor` role to AD application identity created above.
 
-### Verify the Installation
+### Deploy via Azure CLI
 
-1. Log into Alertlogic CloudDefender and navigate into `Log Manager -> Sources` page. Check new O365 log source (with a name provided on step 15) has been created and source status is `ok`.
+You can use either [Azure Cloud Shell](https://docs.microsoft.com/en-gb/azure/cloud-shell/quickstart#start-cloud-shell) or
+local installation of [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
 
-## Using Azure CLI to deploy a template
-
-1. Follow the installation steps up to (but not including) [Download and Deploy the Custom ARM Template in an Azure Subscription](#download_and_deploy_the_custom_arm_template_in_an_azure_subscription) above.
-1. Download [ARM template](https://github.com/alertlogic/o365-collector/raw/master/template.json) locally
-1. Create a resource group with name "ResourceGroupName" in location "West US" by executing following command
-
-```
-az group create -n ResourceGroupName -l "West US"
-```
-
-Deploy a template with the application name "ApplicationName" using following command, during its execution enter required parameters when asked
-
-```
-az group deployment create -g ResourceGroupName -n ApplicationName --template-file template.json
-```
+1. Create a resource group with name "AlertLogicCollect" in location "Central US" by executing following command
+    ```
+    az group create --name AlertLogicCollect --location "Central US"
+    ```
+1. Once created go to `Resource groups` blade and select the resource group.
+1. Select `Access Control (IAM)` and add `Website Contributor` role to AD application identity created above.
+1. Deploy a template by using following command, during its execution enter required parameters when asked
+    ```
+    az group deployment create \
+        --name AlertLogicCollect \
+        --resource-group AlertLogicCollect \
+        --template-uri "https://raw.githubusercontent.com/alertlogic/o365-collector/master/template.json"
+    ```
 
 Wait until it is deployed successfully.
 
+## Verify the Installation
+
+1. Go to `Azure Apps` and choose your function. The last log under `Functions-> Master-> Monitor` should have OK status and should not contain any error messages.
+1. Log into Alertlogic CloudDefender and navigate into `Log Manager -> Sources` page. Check new O365 log source (with a name provided on step 15) has been created and source status is `ok`.
 
 # How It Works
 
