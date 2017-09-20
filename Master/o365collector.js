@@ -14,9 +14,11 @@ const async = require('async');
 const m_alServiceC = require('../lib/al_servicec');
 const m_appSettings = require('./appsettings');
 const m_o365mgmnt = require('../lib/o365_mgmnt');
+const functionJson = require('./function.json');
 
 
 exports.checkRegister = function (context, AlertlogicMasterTimer, azcollectSvc, callback) {
+    console.log(functionJson);
     if (process.env.O365_COLLECTOR_ID) {
         context.log('DEBUG: Reuse collector id', process.env.O365_COLLECTOR_ID);
         return callback(null, process.env.O365_COLLECTOR_ID);
@@ -80,13 +82,17 @@ exports.checkin = function (context, AlertlogicMasterTimer, azcollectSvc, callba
 var _checkEnableAuditStreams = function(context, listedStreams, callback) {
     try {
         let o365AuditStreams = JSON.parse(process.env.O365_CONTENT_STREAMS);
+        // TODO: take webhook path from O365Webhook/function.json
+        let webhookURL = 'https://' + process.env.WEBSITE_HOSTNAME +
+            '/api/o365/webhook';
         async.map(o365AuditStreams,
             function(stream, asyncCallback) {
                 let currentStream = listedStreams.find(
                         obj => obj.contentType === stream);
                 if (currentStream && currentStream.status === 'enabled' &&
                     currentStream.webhook && 
-                    currentStream.webhook.status === 'enabled') {
+                    currentStream.webhook.status === 'enabled' &&
+                    currentStream.webhook.address === webhookURL) {
                     context.log('DEBUG: Stream already enabled', stream);
                     return asyncCallback(null, stream);
                 } else {
