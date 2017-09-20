@@ -17,15 +17,17 @@ const m_o365mgmnt = require('../lib/o365_mgmnt');
 
 
 exports.checkRegister = function (context, AlertlogicMasterTimer, azcollectSvc, callback) {
-    if (process.env.O365_COLLECTOR_ID) {
+    if (process.env.O365_COLLECTOR_ID && process.env.O365_HOST_ID) {
         context.log('DEBUG: Reuse collector id', process.env.O365_COLLECTOR_ID);
         return callback(null, process.env.O365_COLLECTOR_ID);
     } else {
         // Collector is not registered.
         azcollectSvc.register_o365().then(resp => {
             let newSettings = {
-                O365_COLLECTOR_ID: resp.source.id
+                O365_COLLECTOR_ID: resp.source.id,
+                O365_HOST_ID: resp.source.host.id
             };
+            context.log(newSettings);
             m_appSettings.updateAppsettings(newSettings, 
                 function(settingsError) {
                     if (settingsError) {

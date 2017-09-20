@@ -46,7 +46,7 @@ module.exports.setHostMetadata = function(context, root, content, callback) {
     var hostmetaType = root.lookupType('host_metadata.metadata');
     var hostmetaData = getHostmeta(context, root);
     var meta = {
-        hostUuid : process.env.O365_COLLECTOR_ID,
+        hostUuid : process.env.O365_HOST_ID,
         data : hostmetaData,
         dataChecksum : new Buffer('')
     };
@@ -55,7 +55,7 @@ module.exports.setHostMetadata = function(context, root, content, callback) {
     hashValue = sha.update(hashPayload).digest();
     
     var metadataPayload = {
-        hostUuid : process.env.O365_COLLECTOR_ID,
+        hostUuid : process.env.O365_HOST_ID,
         dataChecksum : hashValue,
         timestamp : Math.floor(Date.now() / 1000),
         data : hostmetaData
@@ -160,18 +160,14 @@ function getHostmeta(context, root) {
     var elemType = root.lookupType('alc_dict.elem');
     var valueType = root.lookupType('alc_dict.value');
 
-    var hostTypeVal = {str: 'azure_fun'};
     var hostTypeElem = {
         key: 'host_type',
-        value: hostTypeVal
+        value: {str: 'azure_fun'}
     };
-
-    var localHostnameVal = {str: process.env.WEBSITE_HOSTNAME};
     var localHostnameElem = {
         key: 'local_hostname',
-        value: localHostnameVal
+        value: {str: process.env.WEBSITE_HOSTNAME}
     };
-
     var dict = {
         elem: [localHostnameElem, hostTypeElem]
     };
