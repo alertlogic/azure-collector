@@ -30,7 +30,7 @@ module.exports = function (context, AlertlogicUpdaterTimer) {
             siteSync(context, adToken, function(syncError) {
                 if (syncError) {
                     context.log('Site sync failed: ', syncError);
-                    context.done();
+                    context.done(syncError);
                 } else {
                     context.log('Site sync OK');
                     context.done();
