@@ -13,6 +13,7 @@ const protobuf = require('protobufjs');
 const async = require('async');
 const Long = require('long');
 const path = require('path');
+const crypto = require('crypto');
 
 // FIXME - protobuf load
 // We have to load PROTO_DEF every invocation. Maybe the solution can to to use
@@ -43,20 +44,28 @@ module.exports.setMessage = function(context, root, content, callback) {
 
 module.exports.setHostMetadata = function(context, root, content, callback) {
     var hostmetaType = root.lookupType('host_metadata.metadata');
-
+    var hostmetaData = getHostmeta(context, root);
+    var meta = {
+        hostUuid : process.env.O365_HOST_ID,
+        data : hostmetaData,
+        dataChecksum : new Buffer('')
+    };
+    var sha = crypto.createHash('sha1');
+    var hashPayload = hostmetaType.encode(meta).finish();
+    hashValue = sha.update(hashPayload).digest();
+    
     var metadataPayload = {
-        // FIXME - we need to calculate checksum properly
-        dataChecksum: new Buffer.from([234,104,231,10,12,60,139,208,204,230,
-                          236,248,60,113,61,93,52,49,18,194]),
-        timestamp: Math.floor(Date.now() / 1000),
-        data: dummyMetadataDict(context, root)
+        hostUuid : process.env.O365_HOST_ID,
+        dataChecksum : hashValue,
+        timestamp : Math.floor(Date.now() / 1000),
+        data : hostmetaData
     };
 
     build(hostmetaType, metadataPayload, function(err, buf) {
         if (err)
             context.log('Error: Unable to build host_metadata.');
 
-        callback(err, buf);
+        return callback(err, buf);
     });
 };
 
@@ -74,7 +83,7 @@ module.exports.setBatch = function(context, root, metadata, messages, callback) 
         if (err)
             context.log('Error: Unable to build collected_batch.');
 
-        callback(err, buf);
+        return callback(err, buf);
     });
 };
 
@@ -90,14 +99,14 @@ module.exports.setBatchList = function(context, root, batches, callback) {
         if (err)
             context.log('Error: Unable to build collected_batch_list.');
 
-        callback(err, buf);
+        return callback(err, buf);
     });
 };
 
 module.exports.encode = function(context, root, batchList, callback) {
     var batchListType = root.lookupType('common_proto.collected_batch_list');
     var buf = batchListType.encode(batchList).finish();
-    callback(null, buf);
+    return callback(null, buf);
 };
 
 
@@ -110,7 +119,7 @@ function build(type, payload, callback) {
 
     var payloadCreated = type.create(payload);
 
-    callback(null, payloadCreated);
+    return callback(null, payloadCreated);
 }
 
 
@@ -142,41 +151,28 @@ function parseMessage(context, root, memo, content, callback) {
             context.log('Error: Unable to build collected_message.');
 
         memo.push(buf);
-        callback(err, memo);
+        return callback(err, memo);
     });
 }
 
-// TODO - Fill Metadata dictionary with some dummy content.
-// FIXME - we need to use some real data in metadata
-function dummyMetadataDict(context, root) {
+function getHostmeta(context, root) {
     var dictType = root.lookupType('alc_dict.dict');
     var elemType = root.lookupType('alc_dict.elem');
     var valueType = root.lookupType('alc_dict.value');
 
-    var val1 = {str: 'standalone'};
-    var valPayload1 = buildSync(valueType, val1);
-
-    var val2 = {str: '454712-mnimn2.syd.intensive.int'};
-    var valPayload2 = buildSync(valueType, val2);
-
-    var elem1 = {
+    var hostTypeElem = {
         key: 'host_type',
-        value: val1
+        value: {str: 'azure_fun'}
     };
-    var elemPayload1 = buildSync(elemType, elem1);
-
-    var elem2 = {
+    var localHostnameElem = {
         key: 'local_hostname',
-        value: val2
+        value: {str: process.env.WEBSITE_HOSTNAME}
     };
-    var elemPayload2 = buildSync(elemType, elem2);
-
     var dict = {
-        elem: [elem1, elem2]
+        elem: [localHostnameElem, hostTypeElem]
     };
-    var dictPayload = buildSync(dictType, dict);
-
-    return dictPayload;
+    
+    return buildSync(dictType, dict);
 }
 
 
