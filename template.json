@@ -3,10 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "Name": {
-            "type": "String"
+            "type": "String",
+            "defaultValue": "AlertlogicCollectorApp"
         },
         "Storage Name": {
-            "type": "String"
+            "type": "String",
+            "defaultValue": "AlertlogicCollectorStorage"
+            
         },
         "Alertlogic Access Key Id": {
             "type": "String"
@@ -44,7 +47,7 @@
         },
         "Repository URL": {
             "type": "String",
-            "defaultValue": "https://github.com/alertlogic/o365-collector.git"
+            "defaultValue": "https://github.com/alertlogic/azure-collector.git"
         },
         "Repository Branch": {
             "type": "String",
@@ -79,6 +82,10 @@
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
                             "value": "~1"
+                        },
+                        {
+                            "name": "SCM_USE_FUNCPACK",
+                            "value": "1"
                         },
                         {
                             "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",

@@ -1,4 +1,4 @@
-# o365-collector
+# azure-collector
 
 Alert Logic Office 365 Log Collector
 
@@ -80,7 +80,7 @@ curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.
 
 ### Deploy via the Custom ARM Template in an Azure Subscription
 
-1. **TODO: it is possible to use URI deployment without downloading a file.** Download an ARM [template](https://github.com/alertlogic/o365-collector/raw/master/template.json)
+1. **TODO: it is possible to use URI deployment without downloading a file.** Download an ARM [template](https://github.com/alertlogic/azure-collector/raw/master/template.json)
 1. Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an acive Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
 1. Go to [Customer Deployment](https://portal.azure.com/#create/Microsoft.Template) page. Type in `deploy` in a seach query located on top of Azure Web UI and select `Deploy a custom template`.
 1. Click `Build your own template in the editor` and load the file previously downloaded on step 1 above.
@@ -112,7 +112,7 @@ local installation of [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/ins
     az group deployment create \
         --name AlertLogicCollect \
         --resource-group AlertLogicCollect \
-        --template-uri "https://raw.githubusercontent.com/alertlogic/o365-collector/master/template.json"
+        --template-uri "https://raw.githubusercontent.com/alertlogic/azure-collector/master/template.json"
     ```
 
 Wait until it is deployed successfully.
@@ -169,8 +169,8 @@ A notification contains a link to the actual lo data which is retrieved by the `
 
 # Local Development
 
-1. Clone repo `git clone git@github.com:alertlogic/o365-collector.git`
-1. `cd o365-collector`
+1. Clone repo `git clone git@github.com:alertlogic/azure-collector.git`
+1. `cd azure-collector`
 1. Run `./local_dev/setup.sh`
 1. Edit `./local_dev/dev_config.js`
 1. Run Master function locally: `npm run local-master`
