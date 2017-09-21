@@ -110,7 +110,7 @@ local installation of [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/ins
 1. Deploy a template by using following command, during its execution enter required parameters when asked
     ```
     az group deployment create \
-        --name AlertLogicCollect \
+        --name AlertLogicCollectorApp \
         --resource-group AlertLogicCollect \
         --template-uri "https://raw.githubusercontent.com/alertlogic/azure-collector/master/template.json"
     ```
