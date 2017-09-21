@@ -4,12 +4,10 @@
     "parameters": {
         "Name": {
             "type": "String",
-            "defaultValue": "AlertlogicCollector"
+            "defaultValue": "AlertLogicCollector"
         },
         "Storage Name": {
-            "type": "String",
-            "defaultValue": "alcollectorstorage"
-            
+            "type": "String"
         },
         "Alertlogic Access Key Id": {
             "type": "String"
