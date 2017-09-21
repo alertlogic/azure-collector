@@ -85,20 +85,20 @@ exports.checkin = function (context, AlertlogicMasterTimer, azcollectSvc, callba
 var _checkEnableAuditStreams = function(context, listedStreams, callback) {
     try {
         let o365AuditStreams = JSON.parse(process.env.O365_CONTENT_STREAMS);
+        // TODO: take webhook path from O365Webhook/function.json
+        let webhookURL = 'https://' + process.env.WEBSITE_HOSTNAME +
+            '/api/o365/webhook';
         async.map(o365AuditStreams,
             function(stream, asyncCallback) {
                 let currentStream = listedStreams.find(
                         obj => obj.contentType === stream);
                 if (currentStream && currentStream.status === 'enabled' &&
                     currentStream.webhook && 
-                    currentStream.webhook.status === 'enabled') {
+                    currentStream.webhook.status === 'enabled' &&
+                    currentStream.webhook.address === webhookURL) {
                     context.log('DEBUG: Stream already enabled', stream);
                     return asyncCallback(null, stream);
                 } else {
-                    // TODO: take webhook path from O365Webhook/function.json
-                    let webhookURL = 'https://' + 
-                        process.env.WEBSITE_HOSTNAME +
-                        '/api/o365/webhook';
                     let webhook = { webhook : {
                         address : webhookURL,
                         expiration : ""
