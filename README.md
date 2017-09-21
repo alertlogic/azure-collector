@@ -110,7 +110,7 @@ local installation of [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/ins
 1. Deploy a template by using following command, during its execution enter required parameters when asked
     ```
     az group deployment create \
-        --name AlertLogicCollectorApp \
+        --name AlertLogicCollector \
         --resource-group AlertLogicCollect \
         --template-uri "https://raw.githubusercontent.com/alertlogic/azure-collector/master/template.json"
     ```
@@ -165,7 +165,7 @@ The `Collector` function exposes an HTTP API endpoint `https://<app-name>/o365/w
 ]
 ```
 
-A notification contains a link to the actual lo data which is retrieved by the `Collector`, wrapped into a protobuf structure [TBD link]() and is sent into Alertlogic Ingest service.
+A notification contains a link to the actual data which is retrieved by the `Collector`, wrapped into a protobuf structure [TBD link]() and is sent into Alertlogic Ingest service.
 
 # Local Development
 
@@ -193,8 +193,6 @@ You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
 # Known Issues/ Open Questions
 
 - Sometimes deployments fail after siteSync action. We need better updater to handle that in order not to wait for 12 hours for the next update attempt.
-- Put correct metadata into log batches.
-- Initial Azure Function deployment may take up to 45 minutes.
 
 # Useful Links
 
