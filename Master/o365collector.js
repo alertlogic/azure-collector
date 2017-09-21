@@ -14,11 +14,9 @@ const async = require('async');
 const m_alServiceC = require('../lib/al_servicec');
 const m_appSettings = require('./appsettings');
 const m_o365mgmnt = require('../lib/o365_mgmnt');
-const functionJson = require('./function.json');
 
 
 exports.checkRegister = function (context, AlertlogicMasterTimer, azcollectSvc, callback) {
-    console.log(functionJson);
     if (process.env.O365_COLLECTOR_ID) {
         context.log('DEBUG: Reuse collector id', process.env.O365_COLLECTOR_ID);
         return callback(null, process.env.O365_COLLECTOR_ID);
@@ -96,10 +94,6 @@ var _checkEnableAuditStreams = function(context, listedStreams, callback) {
                     context.log('DEBUG: Stream already enabled', stream);
                     return asyncCallback(null, stream);
                 } else {
-                    // TODO: take webhook path from O365Webhook/function.json
-                    let webhookURL = 'https://' + 
-                        process.env.WEBSITE_HOSTNAME +
-                        '/api/o365/webhook';
                     let webhook = { webhook : {
                         address : webhookURL,
                         expiration : ""
