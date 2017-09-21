@@ -8,7 +8,7 @@
         },
         "Storage Name": {
             "type": "String",
-            "defaultValue": "alertlogiccollectorstorage"
+            "defaultValue": "alcollectorstorage"
             
         },
         "Alertlogic Access Key Id": {
