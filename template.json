@@ -59,6 +59,7 @@
         "location": "[resourceGroup().location]",
         "resourceGroupName": "[resourceGroup().name]",
         "resourceGroupId": "[resourceGroup().id]",
+        "roleAssignmentId": "[split(resourceGroup().id, '/')[2]]",
         "subscriptionId": "[split(subscription().id, '/')[2]]",
         "tenantId": "[subscription().tenantId]",
         "contributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
@@ -186,7 +187,7 @@
         },
         {
             "type": "Microsoft.Authorization/roleAssignments",
-            "name": "DCE46385-7B6B-4E6B-87ED-F01128900999",
+            "name": "[variables('roleAssignmentId')]",
             "apiVersion": "2015-07-01",
             "properties": {
                 "roleDefinitionId": "[variables('contributor')]",

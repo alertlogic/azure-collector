@@ -40,8 +40,8 @@ In order to install O365 Log collector:
 1. On `Required permissions` panel click `Required permissions` button and confirm the selection. **Note**, only AD tenant admin can grant permisions to an Azure AD application.
 1. On the `Settings` panel of the application and select `Keys`.
 1. Enter key `Description` and `Duration` and click `Save`. **Note**, please save the key value, it is needed later during template deployment.
-1. Save the `Application ID` and `Service Principal ID` for use below. To get the `Service Principal ID`, navigate to the `Registered App` blade, 
-click on the link under `Managed application in local directory`.  Then click `Properties`.  The `Service Principal ID`
+1. Save the `Application ID` and `Service Principal Id` for use below. To get the `Service Principal Id`, navigate to the `Registered App` blade, 
+click on the link under `Managed application in local directory`.  Then click `Properties`.  The `Service Principal Id`
 is labled `Object ID` on the properties page.  **Caution** This is not the same `Object ID` listed in the `Properties` blade reached 
 by clicking `Settings` or `All Settings` from the `Registered app`.  It is also not the `Object ID` shown on the `Registered app`
 blade itself.   
@@ -100,7 +100,7 @@ curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.
    - `Office365 Content Streams` - The list of streams you would like to collect.  Valid values are:
         - ["Audit.AzureActiveDirectory","Audit.Exchange","Audit.SharePoint","Audit.General", "DLP.All"]
    - `Office365 Tenant Id` - The GUID of the tenant e.g. `alazurealertlogic.onmicrosoft.com`
-   - `Service Principal ID` - The `Object ID` of the application that created the subscription.
+   - `Service Principal Id` - The `Object ID` of the application that created the subscription.
    You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_ -> Link under 
 _Managed application in local directory_ -> _Properties_ -> _Object ID_
    - `App Client Id` - The GUID of your application that created the subscription.
