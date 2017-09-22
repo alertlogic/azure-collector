@@ -58,6 +58,7 @@
     "variables": {
         "location": "[resourceGroup().location]",
         "resourceGroupName": "[resourceGroup().name]",
+        "resourceGroupId": "[resourceGroup().id]",
         "subscriptionId": "[split(subscription().id, '/')[2]]",
         "tenantId": "[subscription().tenantId]",
         "contributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
