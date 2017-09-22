@@ -40,6 +40,11 @@ In order to install O365 Log collector:
 1. On `Required permissions` panel click `Required permissions` button and confirm the selection. **Note**, only AD tenant admin can grant permisions to an Azure AD application.
 1. On the `Settings` panel of the application and select `Keys`.
 1. Enter key `Description` and `Duration` and click `Save`. **Note**, please save the key value, it is needed later during template deployment.
+1. Save the `Application ID` and `Service Principal ID` for use below. To get the `Service Principal ID`, navigate to the `Registered App` blade, 
+click on the link under `Managed application in local directory`.  Then click `Properties`.  The `Service Principal ID`
+is labled `Object ID` on the properties page.  **Caution** This is not the same `Object ID` listed in the `Properties` blade reached 
+by clicking `Settings` or `All Settings` from the `Registered app`.  It is also not the `Object ID` shown on the `Registered app`
+blade itself.   
 
 ## Create an Alert Logic Access Key
 
@@ -86,15 +91,23 @@ curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.
 1. Click `Build your own template in the editor` and load the file previously downloaded on step 1 above.
 1. Click `Save` button.
 2. Fill in required template parameters and click the `Purchase` button to start a deployment. I.e.:
-   - `APP_TENANT_ID` - The GUID of the tenant e.g. `alazurealertlogic.onmicrosoft.com`
-   - `CUSTOMCONNSTR_APP_CLIENT_ID` - The GUID of your application that created the subscription.
-You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
-   - `CUSTOMCONNSTR_APP_CLIENT_SECRET` - A secret key of your application from _App Registrations_.
-   - `CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID` - `access_key_id` returned from AIMs [above](#create_an_alert_logic_access_key).
-   - `CUSTOMCONNSTR_APP_CI_SECRET_KEY`- `secret_key` returned from AIMs [above](#create_an_alert_logic_access_key).
-
-1. Once deployment is finished go to `Resource groups` blade and select a resource group used for the deployment on step 3 above.
-1. Select `Access Control (IAM)` and add `Website Contributor` role to AD application identity created above.
+   - `Name` - Any name
+   - `Storage Name` - Any Storage Account name (that does not currently exist)
+   - `Alertlogic Access Key Id` - `access_key_id` returned from AIMs [above](#create_an_alert_logic_access_key)
+   - `Alertlogic Secret Key` - `secret_key` returned from AIMs [above](#create_an_alert_logic_access_key)
+   - `Alertlogic API endpoint` - usually `api.global-services.global.alertlogic.com` 
+   - `Alertlogic Data Residency` - usually `default`
+   - `Office365 Content Streams` - The list of streams you would like to collect.  Valid values are:
+        - ["Audit.AzureActiveDirectory","Audit.Exchange","Audit.SharePoint","Audit.General", "DLP.All"]
+   - `Office365 Tenant Id` - The GUID of the tenant e.g. `alazurealertlogic.onmicrosoft.com`
+   - `Service Principal ID` - The `Object ID` of the application that created the subscription.
+   You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_ -> Link under 
+_Managed application in local directory_ -> _Properties_ -> _Object ID_
+   - `App Client Id` - The GUID of your application that created the subscription.
+                     You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
+   - `App Client Secret` - The secret key of your application from _App Registrations_
+   - `Repository URL` - must be `https://github.com/alertlogic/azure-collector.git`
+   - `Repository Branch` - should usually be `master`
 
 ### Deploy via Azure CLI
 

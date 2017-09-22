@@ -37,6 +37,9 @@
         "Office365 Tenant Id": {
             "type": "String"
         },
+        "Service Principal ID": {
+            "type": "String"
+        },
         "App Client Id": {
             "type": "String"
         },
@@ -56,7 +59,8 @@
         "location": "[resourceGroup().location]",
         "resourceGroupName": "[resourceGroup().name]",
         "subscriptionId": "[split(subscription().id, '/')[2]]",
-        "tenantId": "[subscription().tenantId]"
+        "tenantId": "[subscription().tenantId]",
+        "contributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
     },
     "resources": [
         {
@@ -177,6 +181,16 @@
             "location": "[variables('location')]",
             "properties": {
                 "accountType": "Standard_LRS"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "name": "DCE46385-7B6B-4E6B-87ED-F01128900999",
+            "apiVersion": "2015-07-01",
+            "properties": {
+                "roleDefinitionId": "[variables('contributor')]",
+                "principalId": "[parameters('Service Principal ID')]",
+                "scope": "[variables('resourceGroupId')]"
             }
         }
     ]
