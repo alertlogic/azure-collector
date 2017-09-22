@@ -37,7 +37,7 @@
         "Office365 Tenant Id": {
             "type": "String"
         },
-        "Service Principal ID": {
+        "Service Principal Id": {
             "type": "String"
         },
         "App Client Id": {
@@ -190,7 +190,7 @@
             "apiVersion": "2015-07-01",
             "properties": {
                 "roleDefinitionId": "[variables('contributor')]",
-                "principalId": "[parameters('Service Principal ID')]",
+                "principalId": "[parameters('Service Principal Id')]",
                 "scope": "[variables('resourceGroupId')]"
             }
         }
