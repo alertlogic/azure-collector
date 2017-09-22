@@ -61,6 +61,6 @@ module.exports = function (context, AlertlogicMasterTimer) {
         if (error) {
             context.log('ERROR: Master error ', error);
         }
-        context.done();
+        context.done(error);
     });
 };
