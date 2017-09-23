@@ -92,6 +92,10 @@
                             "value": "1"
                         },
                         {
+                            "name": "SCM_POST_DEPLOYMENT_ACTIONS_PATH",
+                            "value": "PostDeploymentActions"
+                        },
+                        {
                             "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
                             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('Storage Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Name')), '2015-06-15').key1)]"
                         },
