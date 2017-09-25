@@ -23,16 +23,16 @@ module.exports = function (context, AlertlogicUpdaterTimer) {
 
     requestNewToken(context, creds, function(tokenError, adToken) {
         if (tokenError) {
-            context.log('Error getting AD token: ',
+            context.log.error('Error getting AD token: ',
                 tokenError.statusCode, tokenError.statusMessage);
             context.done();
         } else {
             siteSync(context, adToken, function(syncError) {
                 if (syncError) {
-                    context.log('Site sync failed: ', syncError);
+                    context.log.error('Site sync failed: ', syncError);
                     context.done(syncError);
                 } else {
-                    context.log('Site sync OK');
+                    context.log.info('Site sync OK');
                     context.done();
                 }
             });

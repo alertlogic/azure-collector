@@ -83,7 +83,7 @@ function parseContent(context, parsedContent, callback) {
 
             var creationTime;
             if (item.CreationTime == undefined) {
-                context.log('WARNING: Unable to parse CreationTime from content.');
+                context.log.warning('Unable to parse CreationTime from content.');
                 creationTime = Math.floor(Date.now() / 1000);
             }
             else {
@@ -105,7 +105,7 @@ function parseContent(context, parsedContent, callback) {
             if (err) {
                 return callback(`Content parsing failure. ${err}`);
             } else {
-                context.log('DEBUG: parsedData: ', result);
+                context.log.verbose('parsedData: ', result);
                 return callback(null, result);
             }
         }

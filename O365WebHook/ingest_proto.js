@@ -21,7 +21,7 @@ const crypto = require('crypto');
 module.exports.load = function(context, callback) {
     protobuf.load(getCommonProtoPath(), function(err, root) {
         if (err)
-            context.log('Error: Unable to load proto files.', err);
+            context.log.error('Unable to load proto files.', err);
 
         callback(err, root);
     });
@@ -34,7 +34,7 @@ module.exports.setMessage = function(context, root, content, callback) {
         },
         function(err, result) {
             if (err)
-                context.log('Error: Unable to build messages.');
+                context.log.error('Unable to build messages.');
 
             callback(err, result);
         }
@@ -63,7 +63,7 @@ module.exports.setHostMetadata = function(context, root, content, callback) {
 
     build(hostmetaType, metadataPayload, function(err, buf) {
         if (err)
-            context.log('Error: Unable to build host_metadata.');
+            context.log.error('Unable to build host_metadata.');
 
         return callback(err, buf);
     });
@@ -81,7 +81,7 @@ module.exports.setBatch = function(context, root, metadata, messages, callback) 
 
     build(batchType, batchPayload, function(err, buf) {
         if (err)
-            context.log('Error: Unable to build collected_batch.');
+            context.log.error('Unable to build collected_batch.');
 
         return callback(err, buf);
     });
@@ -97,7 +97,7 @@ module.exports.setBatchList = function(context, root, batches, callback) {
 
     build(batchListType, batchListPayload, function(err, buf) {
         if (err)
-            context.log('Error: Unable to build collected_batch_list.');
+            context.log.error('Unable to build collected_batch_list.');
 
         return callback(err, buf);
     });
@@ -148,7 +148,7 @@ function parseMessage(context, root, memo, content, callback) {
 
     build(messageType, messagePayload, function(err, buf) {
         if (err)
-            context.log('Error: Unable to build collected_message.');
+            context.log.error('Unable to build collected_message.');
 
         memo.push(buf);
         return callback(err, memo);

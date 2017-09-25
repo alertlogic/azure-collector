@@ -39,10 +39,27 @@ var debugContext = {
     bindings: {
         req
     },
-    log: function () {
-        var util = require('util');
-        var val = util.format.apply(null, arguments);
-        console.log(val);
+    log: {
+        error : function() {
+            var util = require('util');
+            var val = util.format.apply(null, arguments);
+            return console.log('ERROR:', val);
+        },
+        warning : function() {
+            var util = require('util');
+            var val = util.format.apply(null, arguments);
+            return console.log('WARNING:', val);
+        },
+        info : function() {
+            var util = require('util');
+            var val = util.format.apply(null, arguments);
+            return console.log('INFO:', val);
+        },
+        verbose : function() {
+            var util = require('util');
+            var val = util.format.apply(null, arguments);
+            return console.log('VERBOSE:', val);
+        }
     },
     done: function () {
         console.log('Response:', this.res);

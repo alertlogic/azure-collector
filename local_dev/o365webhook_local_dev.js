@@ -31,10 +31,27 @@ var debugContext = {
     bindings: {
         req
     },
-    log: function () {
-        var util = require('util');
-        var val = util.format.apply(null, arguments);
-        console.log(val);
+    log: {
+        error : function() {
+            var util = require('util');
+            var val = util.format.apply(null, arguments);
+            return console.log('ERROR:', val);
+        },
+        warning : function() {
+            var util = require('util');
+            var val = util.format.apply(null, arguments);
+            return console.log('WARNING:', val);
+        },
+        info : function() {
+            var util = require('util');
+            var val = util.format.apply(null, arguments);
+            return console.log('INFO:', val);
+        },
+        verbose : function() {
+            var util = require('util');
+            var val = util.format.apply(null, arguments);
+            return console.log('VERBOSE:', val);
+        }
     },
     done: function () {
         console.log('Response:', this.res);
@@ -58,15 +75,6 @@ var debugEvent = {
             //   "contentCreated": "2017-08-13T23:03:56.050Z",
             //   "notificationSent": "2017-08-13T23:03:56.050Z",
             //   "contentExpiration": "2017-08-20T16:44:49.279Z"
-            // },
-            // {
-            //   "contentType": "Audit.AzureActiveDirectory",
-            //   "contentId": "20170815224757748004716$20170815224757748004716$audit_azureactivedirectory$Audit_AzureActiveDirectory$IsFromNotification",
-            //   "contentUri": "https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20170815224757748004716$20170815224757748004716$audit_azureactivedirectory$Audit_AzureActiveDirectory$IsFromNotification",
-            //   "notificationStatus": "Failed",
-            //   "contentCreated": "2017-08-17T12:31:25.653Z",
-            //   "notificationSent": "2017-08-17T12:31:25.653Z",
-            //   "contentExpiration": "2017-08-22T22:47:57.748Z"
             // }
         ]
 };
