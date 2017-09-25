@@ -83,7 +83,7 @@ function parseContent(context, parsedContent, callback) {
 
             var creationTime;
             if (item.CreationTime == undefined) {
-                context.log.warning('Unable to parse CreationTime from content.');
+                context.log.warn('Unable to parse CreationTime from content.');
                 creationTime = Math.floor(Date.now() / 1000);
             }
             else {
@@ -153,7 +153,7 @@ function sendToIngest(context, content, callback) {
                     return callback(`Unable to compress. ${err}`);
                 } else {
                     if (compressed.byteLength > 700000)
-                        context.log.warning(`Compressed log batch length`,
+                        context.log.warn(`Compressed log batch length`,
                             `(${compressed.byteLength}) exceeds maximum allowed value.`);
                     return g_ingestc.sendO365Data(compressed)
                         .then(resp => {

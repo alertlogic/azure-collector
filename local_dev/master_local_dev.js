@@ -45,7 +45,7 @@ var debugContext = {
         error : function() {
             return console.log('ERROR:', util.format.apply(null, arguments));
         },
-        warning : function() {
+        warn : function() {
             return console.log('WARNING:', util.format.apply(null, arguments));
         },
         info : function() {
