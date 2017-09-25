@@ -25,7 +25,7 @@ module.exports = function (context, AlertlogicUpdaterTimer) {
         if (tokenError) {
             context.log.error('Error getting AD token: ',
                 tokenError.statusCode, tokenError.statusMessage);
-            context.done();
+            context.done(tokenError);
         } else {
             siteSync(context, adToken, function(syncError) {
                 if (syncError) {

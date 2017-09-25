@@ -28,7 +28,7 @@ module.exports = function (context, event) {
                     context.log.error(`${err}`);
                     context.res.headers = {};
                     context.res.status = 500;
-                    context.done();
+                    context.done(err);
                 } else {
                     context.log.info('OK!');
                     context.done();
