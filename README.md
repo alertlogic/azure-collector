@@ -5,14 +5,14 @@ Alert Logic Office 365 Log Collector
 
 # Overview
 
-This repo contains Azure Web application Node.js source code and an ARM template for setting up a data collector in Azure which will collect and forward Office 365 log data to the Alert Logic Cloud Defender Log Manager (LM) feature.
+This repository contains Azure Web application Node.js source code and an ARM template for setting up a data collector in Azure which will collect and forward Office 365 log data to the Alert Logic Cloud Defender Log Manager (LM) feature.
 
 # Installation
 
 Installation requires the following steps:
 
 1. Register a new O365 web application in O365 portal for collecting O365 logs.
-1. Set up the required Active Directory security permissions for the application to authorize it to read threat intelligence data and activity reports for your orgaization.
+1. Set up the required Active Directory security permissions for the application to authorize it to read threat intelligence data and activity reports for your organization.
 1. Create an Access Key that will allow the application to connect to the Alert Logic Cloud Defender and Cloud Insight backend.
 1. Download and deploy a custom ARM template to Microsoft Azure to create functions for collecting and managing O365 log data
 1. Verify that installation was successful using Alertlogic CloudDefender UI.
@@ -37,18 +37,18 @@ In order to install O365 Log collector:
 1. On the `Settings` panel and select `Required permissions` and click `+Add`
 1. Hit `Select an API` and chose `Office 365 Management APIs`, click `Select`
 1. In `Application permissions` select `Read service health information for your organization`, `Read activity data for your organization`, `Read threat intelligence data for your organization` and `Read activity reports for your organization`. Click `Select` and `Done` buttons.
-1. On `Required permissions` panel click `Required permissions` button and confirm the selection. **Note**, only AD tenant admin can grant permisions to an Azure AD application.
+1. On `Required permissions` panel click `Required permissions` button and confirm the selection. **Note**, only AD tenant admin can grant permissions to an Azure AD application.
 1. On the `Settings` panel of the application and select `Keys`.
 1. Enter key `Description` and `Duration` and click `Save`. **Note**, please save the key value, it is needed later during template deployment.
 1. Save the `Application ID` and `Service Principal Id` for use below. To get the `Service Principal Id`, navigate to the `Registered App` blade, 
 click on the link under `Managed application in local directory`.  Then click `Properties`.  The `Service Principal Id`
-is labled `Object ID` on the properties page.  **Caution** This is not the same `Object ID` listed in the `Properties` blade reached 
+is labeled `Object ID` on the properties page.  **Caution** This is not the same `Object ID` listed in the `Properties` blade reached 
 by clicking `Settings` or `All Settings` from the `Registered app`.  It is also not the `Object ID` shown on the `Registered app`
 blade itself.   
 
 ## Create an Alert Logic Access Key
 
-Login and get an authentication token from the Alert Logic Cloud Insight product [AIMS API](https://console.product.dev.alertlogic.com/api/aims/).  For example, from the command line use [curl](https://en.wikipedia.org/wiki/CURL) as follows (where `<user>` is your CloudInsight user and `<pwd>` is your CloudInsight password):
+Login and get an authentication token from the Alert Logic Cloud Insight product [AIMS API](https://console.product.dev.alertlogic.com/api/aims/).  From the command line use [curl](https://en.wikipedia.org/wiki/CURL) as follows (where `<user>` is your CloudInsight user and `<pwd>` is your CloudInsight password):
 
 ```
 curl -X POST -v -u '<user>:<pwd>' https://api.global-services.global.alertlogic.com/aims/v1/authenticate
@@ -60,7 +60,7 @@ Make a note of the following fields returned in the response:
    * ACCOUNT ID
    * TOKEN
 
-Use the authentication token returned in the response to create access keys for the Azure application deployed in the next section.  For example, issue the following curl command (where `<TOKEN>` is the auth token, `<ACCOUNT_ID>` is the account id, and `<USER_ID>` is the user id returned above):
+Use the authentication token returned in the response to create access keys for the Azure application deployed in the next section.  Issue the following curl command (where `<TOKEN>` is the auth token, `<ACCOUNT_ID>` is the account id, and `<USER_ID>` is the user id returned above):
 
 ```
 curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.alertlogic.com/aims/v1/<ACCOUNT_ID>/users/<USER_ID>/access_keys
@@ -83,11 +83,12 @@ curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.
 
 ## Function deployment
 
+Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an active Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
+
 ### Deploy via the Custom ARM Template in an Azure Subscription
 
-1. **TODO: it is possible to use URI deployment without downloading a file.** Download an ARM [template](https://github.com/alertlogic/azure-collector/raw/master/template.json)
-1. Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an acive Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
-1. Go to [Customer Deployment](https://portal.azure.com/#create/Microsoft.Template) page. Type in `deploy` in a seach query located on top of Azure Web UI and select `Deploy a custom template`.
+1. Download an ARM [template](https://github.com/alertlogic/azure-collector/raw/master/template.json)
+1. Go to [Customer Deployment](https://portal.azure.com/#create/Microsoft.Template) page. Type in `deploy` in a search query located on top of Azure Web UI and select `Deploy a custom template`.
 1. Click `Build your own template in the editor` and load the file previously downloaded on step 1 above.
 1. Click `Save` button.
 2. Fill in required template parameters and click the `Purchase` button to start a deployment. I.e.:
@@ -133,13 +134,13 @@ Wait until it is deployed successfully.
 ## Verify the Installation
 
 1. Go to `Azure Apps` and choose your function. The last log under `Functions-> Master-> Monitor` should have OK status and should not contain any error messages.
-1. Log into Alertlogic CloudDefender and navigate into `Log Manager -> Sources` page. Check new O365 log source (with a name provided on step 15) has been created and source status is `ok`.
+1. Log into Alertlogic CloudDefender and navigate into `Log Manager -> Sources` page. Check new O365 log source (with a name provided during `az group deployment create` above) has been created and source status is `ok`.
 
 # How It Works
 
 ## Master Function
 
-The `Master` function is a timer trigger function which is responcible for:
+The `Master` function is a timer trigger function which is responsible for:
 - registering the Azure web app In Alertlogic backend;
 - reporting health-checks to the backed;
 - performing log source configuration updates, which happen via Alertlogic UI.
@@ -189,13 +190,13 @@ A notification contains a link to the actual data which is retrieved by the `Col
 1. Run Master function locally: `npm run local-master`
 1. Run Updater function locally: `npm run local-updater`
 1. Run O365WebHook function locally: `npm run local-o365webhook`
-1. Run `npm test` in order to perform code analisys.
+1. Run `npm test` in order to perform code analysis.
 
 Please use the following [code style](https://github.com/airbnb/javascript) as much as possible.
 
 ## Setting environment in dev_config.js
 
-- `process.env.APP_TENANT_ID` - The GUID of the tenant ie. 'alazurealertlogic.onmicrosoft.com'
+- `process.env.APP_TENANT_ID` - The GUID of the tenant i.e. 'alazurealertlogic.onmicrosoft.com'
 - `process.env.CUSTOMCONNSTR_APP_CLIENT_ID` - The GUID of your application that created the subscription.
 You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
 - `process.env.CUSTOMCONNSTR_APP_CLIENT_SECRET` - A secret key of your application from _App Registrations_.
