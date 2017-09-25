@@ -1,5 +1,5 @@
 $date = Get-Date
-$min = $date.Minute % 15 + 1
+$min = ($date.Minute + 1) % 15
 $sec = $date.Second
 $new_schedule = "$sec $min-59/15 * * * *"
 Write-Output "Updating Master timer trigger with ($new_schedule)."
