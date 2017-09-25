@@ -48,7 +48,7 @@ blade itself.
 
 ## Create an Alert Logic Access Key
 
-Login and get an authentication token from the Alert Logic Cloud Insight product [AIMS API](https://console.product.dev.alertlogic.com/api/aims/).  For example, from the command line use [curl](https://en.wikipedia.org/wiki/CURL) as follows (where `<user>` is your CloudInsight user and `<pwd>` is your CloudInsight password):
+Login and get an authentication token from the Alert Logic Cloud Insight product [AIMS API](https://console.product.dev.alertlogic.com/api/aims/).  From the command line use [curl](https://en.wikipedia.org/wiki/CURL) as follows (where `<user>` is your CloudInsight user and `<pwd>` is your CloudInsight password):
 
 ```
 curl -X POST -v -u '<user>:<pwd>' https://api.global-services.global.alertlogic.com/aims/v1/authenticate
@@ -60,7 +60,7 @@ Make a note of the following fields returned in the response:
    * ACCOUNT ID
    * TOKEN
 
-Use the authentication token returned in the response to create access keys for the Azure application deployed in the next section.  For example, issue the following curl command (where `<TOKEN>` is the auth token, `<ACCOUNT_ID>` is the account id, and `<USER_ID>` is the user id returned above):
+Use the authentication token returned in the response to create access keys for the Azure application deployed in the next section.  Issue the following curl command (where `<TOKEN>` is the auth token, `<ACCOUNT_ID>` is the account id, and `<USER_ID>` is the user id returned above):
 
 ```
 curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.alertlogic.com/aims/v1/<ACCOUNT_ID>/users/<USER_ID>/access_keys
@@ -83,11 +83,12 @@ curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.
 
 ## Function deployment
 
+Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an active Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
+
 ### Deploy via the Custom ARM Template in an Azure Subscription
 
-1. **TODO: it is possible to use URI deployment without downloading a file.** Download an ARM [template](https://github.com/alertlogic/azure-collector/raw/master/template.json)
-1. Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an acive Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
-1. Go to [Customer Deployment](https://portal.azure.com/#create/Microsoft.Template) page. Type in `deploy` in a seach query located on top of Azure Web UI and select `Deploy a custom template`.
+1. Download an ARM [template](https://github.com/alertlogic/azure-collector/raw/master/template.json)
+1. Go to [Customer Deployment](https://portal.azure.com/#create/Microsoft.Template) page. Type in `deploy` in a search query located on top of Azure Web UI and select `Deploy a custom template`.
 1. Click `Build your own template in the editor` and load the file previously downloaded on step 1 above.
 1. Click `Save` button.
 2. Fill in required template parameters and click the `Purchase` button to start a deployment. I.e.:
@@ -133,7 +134,7 @@ Wait until it is deployed successfully.
 ## Verify the Installation
 
 1. Go to `Azure Apps` and choose your function. The last log under `Functions-> Master-> Monitor` should have OK status and should not contain any error messages.
-1. Log into Alertlogic CloudDefender and navigate into `Log Manager -> Sources` page. Check new O365 log source (with a name provided on step 15) has been created and source status is `ok`.
+1. Log into Alertlogic CloudDefender and navigate into `Log Manager -> Sources` page. Check new O365 log source (with a name provided during `az group deployment create` above) has been created and source status is `ok`.
 
 # How It Works
 
