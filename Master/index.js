@@ -28,7 +28,7 @@ module.exports = function (context, AlertlogicMasterTimer) {
                     if (endpointsError) {
                         return asyncCallback(endpointsError);
                     }
-                    context.log('INFO: Alertlogic endpoints updated.');
+                    context.log.info('Alertlogic endpoints updated.');
                     return asyncCallback(null);
             });
         },
@@ -41,7 +41,7 @@ module.exports = function (context, AlertlogicMasterTimer) {
                     if (azcollectError) {
                         return asyncCallback(azcollectError);
                     }
-                    context.log('INFO: O365 source registered', collectorId);
+                    context.log.info('O365 source registered', collectorId);
                     return asyncCallback(null, azcollectSvc);
                 });
         },
@@ -52,15 +52,15 @@ module.exports = function (context, AlertlogicMasterTimer) {
                     if (azcollectError) {
                         return asyncCallback(`Checkin failed ${azcollectError}`);
                     }
-                    context.log('INFO: O365 source checkin OK', checkinResp);
+                    context.log.info('O365 source checkin OK', checkinResp);
                     return asyncCallback(null);
                 });
         }
     ],
     function(error, results) {
         if (error) {
-            context.log('ERROR: Master error ', error);
+            context.log.error('Master error ', error);
         }
-        context.done();
+        context.done(error);
     });
 };

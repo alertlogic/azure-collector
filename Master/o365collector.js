@@ -17,13 +17,17 @@ const m_o365mgmnt = require('../lib/o365_mgmnt');
 
 
 exports.checkRegister = function (context, AlertlogicMasterTimer, azcollectSvc, callback) {
-    if (process.env.O365_COLLECTOR_ID) {
-        context.log('DEBUG: Reuse collector id', process.env.O365_COLLECTOR_ID);
+    if (process.env.O365_COLLECTOR_ID && process.env.O365_HOST_ID) {
+        context.log.verbose('Reuse collector id', process.env.O365_COLLECTOR_ID);
         return callback(null, process.env.O365_COLLECTOR_ID);
     } else {
         // Collector is not registered.
         azcollectSvc.register_o365().then(resp => {
-            m_appSettings.updateAppsettings({O365_COLLECTOR_ID: resp.source.id}, 
+            let newSettings = {
+                O365_COLLECTOR_ID: resp.source.id,
+                O365_HOST_ID: resp.source.host.id
+            };
+            m_appSettings.updateAppsettings(newSettings, 
                 function(settingsError) {
                     if (settingsError) {
                         return callback(settingsError);
@@ -80,20 +84,20 @@ exports.checkin = function (context, AlertlogicMasterTimer, azcollectSvc, callba
 var _checkEnableAuditStreams = function(context, listedStreams, callback) {
     try {
         let o365AuditStreams = JSON.parse(process.env.O365_CONTENT_STREAMS);
+        // TODO: take webhook path from O365Webhook/function.json
+        let webhookURL = 'https://' + process.env.WEBSITE_HOSTNAME +
+            '/api/o365/webhook';
         async.map(o365AuditStreams,
             function(stream, asyncCallback) {
                 let currentStream = listedStreams.find(
                         obj => obj.contentType === stream);
                 if (currentStream && currentStream.status === 'enabled' &&
                     currentStream.webhook && 
-                    currentStream.webhook.status === 'enabled') {
-                    context.log('DEBUG: Stream already enabled', stream);
+                    currentStream.webhook.status === 'enabled' &&
+                    currentStream.webhook.address === webhookURL) {
+                    context.log.verbose('Stream already enabled', stream);
                     return asyncCallback(null, stream);
                 } else {
-                    // TODO: take webhook path from O365Webhook/function.json
-                    let webhookURL = 'https://' + 
-                        process.env.WEBSITE_HOSTNAME +
-                        '/api/o365/webhook';
                     let webhook = { webhook : {
                         address : webhookURL,
                         expiration : ""

@@ -1,6 +1,6 @@
 {
   "name": "azure_collector",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "dependencies": {
     "async": "*",
     "azure": "^2.0.0-preview",
@@ -16,10 +16,13 @@
     "local-ad": "node ./local_dev/ad_token_local_dev.js",
     "local-version": "node ./local_dev/version_local_dev.js",
     "lint": "jshint --exclude \"./node_modules/*\" **/*.js",
-    "test": "npm run lint"
+    "test": "npm run lint && mocha"
   },
   "devDependencies": {
     "jshint": "^2.9.5",
-    "pre-commit": "^1.2.2"
+    "mocha": "^3.5.3",
+    "pre-commit": "^1.2.2",
+    "rewire": "^2.5.2",
+    "sinon": "^3.3.0"
   }
 }

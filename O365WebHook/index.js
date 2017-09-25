@@ -25,12 +25,12 @@ module.exports = function (context, event) {
         return m_o365content.processNotifications(context, eventBody,
             function(err) {
                 if (err) {
-                    context.log(`ERROR: ${err}`);
+                    context.log.error(`${err}`);
                     context.res.headers = {};
                     context.res.status = 500;
-                    context.done();
+                    context.done(err);
                 } else {
-                    context.log('Debug: Success!');
+                    context.log.info('OK!');
                     context.done();
                 }
             });

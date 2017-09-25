@@ -3,7 +3,8 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "Name": {
-            "type": "String"
+            "type": "String",
+            "defaultValue": "AlertLogicCollector"
         },
         "Storage Name": {
             "type": "String"
@@ -36,6 +37,9 @@
         "Office365 Tenant Id": {
             "type": "String"
         },
+        "Service Principal Id": {
+            "type": "String"
+        },
         "App Client Id": {
             "type": "String"
         },
@@ -44,7 +48,7 @@
         },
         "Repository URL": {
             "type": "String",
-            "defaultValue": "https://github.com/alertlogic/o365-collector.git"
+            "defaultValue": "https://github.com/alertlogic/azure-collector.git"
         },
         "Repository Branch": {
             "type": "String",
@@ -54,8 +58,11 @@
     "variables": {
         "location": "[resourceGroup().location]",
         "resourceGroupName": "[resourceGroup().name]",
+        "resourceGroupId": "[resourceGroup().id]",
+        "roleAssignmentId": "[guid(uniqueString( resourceGroup().id, deployment().name ))]",
         "subscriptionId": "[split(subscription().id, '/')[2]]",
-        "tenantId": "[subscription().tenantId]"
+        "tenantId": "[subscription().tenantId]",
+        "contributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
     },
     "resources": [
         {
@@ -79,6 +86,14 @@
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
                             "value": "~1"
+                        },
+                        {
+                            "name": "SCM_USE_FUNCPACK",
+                            "value": "1"
+                        },
+                        {
+                            "name": "SCM_POST_DEPLOYMENT_ACTIONS_PATH",
+                            "value": "PostDeploymentActions"
                         },
                         {
                             "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
@@ -172,6 +187,16 @@
             "location": "[variables('location')]",
             "properties": {
                 "accountType": "Standard_LRS"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "name": "[variables('roleAssignmentId')]",
+            "apiVersion": "2015-07-01",
+            "properties": {
+                "roleDefinitionId": "[variables('contributor')]",
+                "principalId": "[parameters('Service Principal Id')]",
+                "scope": "[variables('resourceGroupId')]"
             }
         }
     ]

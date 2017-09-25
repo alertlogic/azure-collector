@@ -39,7 +39,7 @@ class Ingest extends m_alServiceC.AlServiceC {
             },
             body : data
         };
-        return this.post(`/data/o365msgs`, payload);
+        return this.post(`/data/aicspmsgs`, payload);
     }
 }
 
