@@ -7,6 +7,9 @@
  * @end
  * -----------------------------------------------------------------------------
  */
+ 
+const util = require('util');
+
 process.env.WEBSITE_HOSTNAME = 'kkuzmin-app-o365.azurewebsites.net';
 process.env.O365_CONTENT_STREAMS = '["Audit.AzureActiveDirectory", "Audit.Exchange", "Audit.SharePoint", "Audit.General"]';
 process.env.TMP = '/tmp/';
@@ -20,10 +23,19 @@ var context = {
     invocationId: 'ID',
     bindings: {
     },
-    log: function () {
-        var util = require('util');
-        var val = util.format.apply(null, arguments);
-        console.log(val);
+    log: {
+        error : function() {
+            return console.log('ERROR:', util.format.apply(null, arguments));
+        },
+        warn : function() {
+            return console.log('WARNING:', util.format.apply(null, arguments));
+        },
+        info : function() {
+            return console.log('INFO:', util.format.apply(null, arguments));
+        },
+        verbose : function() {
+            return console.log('VERBOSE:', util.format.apply(null, arguments));
+        }
     },
     done: function () {
         console.log('Test response:');

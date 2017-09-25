@@ -18,7 +18,7 @@ const m_o365mgmnt = require('../lib/o365_mgmnt');
 
 exports.checkRegister = function (context, AlertlogicMasterTimer, azcollectSvc, callback) {
     if (process.env.O365_COLLECTOR_ID && process.env.O365_HOST_ID) {
-        context.log('DEBUG: Reuse collector id', process.env.O365_COLLECTOR_ID);
+        context.log.verbose('Reuse collector id', process.env.O365_COLLECTOR_ID);
         return callback(null, process.env.O365_COLLECTOR_ID);
     } else {
         // Collector is not registered.
@@ -27,7 +27,6 @@ exports.checkRegister = function (context, AlertlogicMasterTimer, azcollectSvc, 
                 O365_COLLECTOR_ID: resp.source.id,
                 O365_HOST_ID: resp.source.host.id
             };
-            context.log(newSettings);
             m_appSettings.updateAppsettings(newSettings, 
                 function(settingsError) {
                     if (settingsError) {
@@ -96,7 +95,7 @@ var _checkEnableAuditStreams = function(context, listedStreams, callback) {
                     currentStream.webhook && 
                     currentStream.webhook.status === 'enabled' &&
                     currentStream.webhook.address === webhookURL) {
-                    context.log('DEBUG: Stream already enabled', stream);
+                    context.log.verbose('Stream already enabled', stream);
                     return asyncCallback(null, stream);
                 } else {
                     let webhook = { webhook : {

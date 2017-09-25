@@ -1,3 +1,5 @@
+const util = require('util');
+
 var devConfig = require('./dev_config');
 var azureFunction = require('../Master/index');
 
@@ -39,10 +41,19 @@ var debugContext = {
     bindings: {
         req
     },
-    log: function () {
-        var util = require('util');
-        var val = util.format.apply(null, arguments);
-        console.log(val);
+    log: {
+        error : function() {
+            return console.log('ERROR:', util.format.apply(null, arguments));
+        },
+        warn : function() {
+            return console.log('WARNING:', util.format.apply(null, arguments));
+        },
+        info : function() {
+            return console.log('INFO:', util.format.apply(null, arguments));
+        },
+        verbose : function() {
+            return console.log('VERBOSE:', util.format.apply(null, arguments));
+        }
     },
     done: function () {
         console.log('Response:', this.res);
