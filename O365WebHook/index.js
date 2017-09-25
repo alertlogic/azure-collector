@@ -30,7 +30,7 @@ module.exports = function (context, event) {
                     context.res.status = 500;
                     context.done();
                 } else {
-                    context.log.verbose('Success!');
+                    context.log.info('OK!');
                     context.done();
                 }
             });
