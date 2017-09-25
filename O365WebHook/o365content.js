@@ -152,6 +152,9 @@ function sendToIngest(context, content, callback) {
                 if (err) {
                     return callback(`Unable to compress. ${err}`);
                 } else {
+                    if (compressed.byteLength > 700000)
+                        context.log.warning(`Compressed log batch length`,
+                            `(${compressed.byteLength}) exceeds maximum allowed value.`);
                     return g_ingestc.sendO365Data(compressed)
                         .then(resp => {
                             return callback(null, resp);
