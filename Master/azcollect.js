@@ -55,6 +55,7 @@ class Azcollect extends m_alServiceC.AlServiceC {
 
     checkin(collectorType, collectorId, statusVal, descriptionVal) {
         let statusBody = {
+            type : collectorType,
             version : m_version.getVersion(),
             status : statusVal,
             description : descriptionVal
