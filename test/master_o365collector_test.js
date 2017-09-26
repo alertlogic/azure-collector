@@ -17,6 +17,7 @@ var m_o365mgmnt = require('../lib/o365_mgmnt');
 
 var m_azcollect = require('../Master/azcollect');
 var m_o365collector = rewire('../Master/o365collector');
+var m_appsettings = require('../Master/appsettings');
 
 describe('Master Function Units', function() {
     var private_checkEnableAuditStreams;
@@ -342,6 +343,72 @@ describe('Master Function Units', function() {
                     }
             });
         });
+    });
+    
+    describe('O365 collector register tests', function() {
+        it('checks collector and host id are reused if already registered', function(done) {
+            process.env.O365_COLLECTOR_ID  = 'existing-collector-id';
+            process.env.O365_HOST_ID  = 'existing-collector-id';
+            var updateSettingsStub = sinon.stub(m_appsettings, 'updateAppsettings').callsFake(
+                function fakeFn(settings, callback) {
+                    return callback(null, 'new-source-id');
+            });
+            var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
+            sinon.stub(azcollectSvc, 'register_o365').resolves({
+                source : {
+                    id : 'new-source-id',
+                    host : {
+                        id : 'new-host-id'
+                    }
+                }            
+            });
 
+            m_o365collector.checkRegister(testMock.context, testMock.timer, azcollectSvc, 
+                function(err, resp){
+                    if (err) {
+                        updateSettingsStub.restore();
+                        return done(err);
+                    } else {
+                        sinon.assert.callCount(updateSettingsStub, 0);
+                        sinon.assert.callCount(azcollectSvc.register_o365, 0);
+                        updateSettingsStub.restore();
+                        return done();
+                    }
+            });
+        });
+        
+        it('checks updateSettings is called during registration', function(done) {
+            process.env.O365_COLLECTOR_ID = null;
+            var updateSettingsStub = sinon.stub(m_appsettings, 'updateAppsettings').callsFake(
+                function fakeFn(settings, callback) {
+                    return callback(null, 'new-source-id');
+            });
+            var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
+            sinon.stub(azcollectSvc, 'register_o365').resolves({
+                source : {
+                    id : 'new-source-id',
+                    host : {
+                        id : 'new-host-id'
+                    }
+                }            
+            });
+
+            m_o365collector.checkRegister(testMock.context, testMock.timer, azcollectSvc, 
+                function(err, resp){
+                    if (err) {
+                        updateSettingsStub.restore();
+                        return done(err);
+                    } else {
+                        var expectedSettings = {
+                            O365_COLLECTOR_ID: 'new-source-id',
+                            O365_HOST_ID: 'new-host-id'
+                        };               
+                        sinon.assert.callCount(updateSettingsStub, 1);
+                        sinon.assert.calledWith(updateSettingsStub, expectedSettings);
+                        updateSettingsStub.restore();
+                        return done();
+                    }
+            });
+        });
     });
 });
