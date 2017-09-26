@@ -1,13 +1,13 @@
 /* -----------------------------------------------------------------------------
  * @copyright (C) 2017, Alert Logic, Inc
  * @doc
- * 
+ *
  * The module for communicating with Alertlogic Azcollect service.
- * 
+ *
  * @end
  * -----------------------------------------------------------------------------
  */
- 
+
 const m_alServiceC = require('../lib/al_servicec');
 const m_version = require('./version');
 
@@ -27,7 +27,7 @@ class Azcollect extends m_alServiceC.AlServiceC {
         super(apiEndpoint, 'azcollect', 'v1',
                 aimsCreds, process.env.TMP);
     }
-    
+
     _o365RegisterBody() {
         let o365AuditStreams = JSON.parse(process.env.O365_CONTENT_STREAMS);
         let registerParams = {};
@@ -47,15 +47,16 @@ class Azcollect extends m_alServiceC.AlServiceC {
         }};
         return Object.assign({}, commonParams , configParams);
     }
-    
+
     register_o365() {
         let regBody = this._o365RegisterBody();
         return this.post(`/register/o365`, {body: regBody});
     }
-    
+
     checkin(collectorType, collectorId, statusVal, descriptionVal) {
         let statusBody = {
-            collector_version : m_version.getVersion(),
+            type : collectorType,
+            version : m_version.getVersion(),
             status : statusVal,
             description : descriptionVal
         };
