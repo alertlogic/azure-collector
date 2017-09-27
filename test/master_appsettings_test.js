@@ -16,7 +16,7 @@ var sinon = require('sinon');
 
 var m_appsettings = rewire('../Master/appsettings');
 
-describe('Master Function Units', function() {
+describe('Master Function appsettings.js Units', function() {
     var private_appAdCreds;
     var private_websiteClient;
     var msListApplicationSettingsStub;

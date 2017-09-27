@@ -19,9 +19,10 @@ var m_azcollect = require('../Master/azcollect');
 var m_o365collector = rewire('../Master/o365collector');
 var m_appsettings = require('../Master/appsettings');
 
-describe('Master Function Units', function() {
+describe('Master Function o365collector.js Units', function() {
     var private_checkEnableAuditStreams;
     var msSubscriptionsStartStub;
+    var updateSettingsStub = null;
     
     before(function() {
         private_checkEnableAuditStreams = m_o365collector.__get__('_checkEnableAuditStreams');
@@ -35,6 +36,9 @@ describe('Master Function Units', function() {
     });
     beforeEach(function() {
         msSubscriptionsStartStub.resetHistory();
+    });
+    afterEach(function() {
+        if (updateSettingsStub) updateSettingsStub.restore();
     });
             
     describe('_checkEnableAuditStreams()', function() {
@@ -349,9 +353,9 @@ describe('Master Function Units', function() {
         it('checks collector and host id are reused if already registered', function(done) {
             process.env.O365_COLLECTOR_ID  = 'existing-collector-id';
             process.env.O365_HOST_ID  = 'existing-collector-id';
-            var updateSettingsStub = sinon.stub(m_appsettings, 'updateAppsettings').callsFake(
+            updateSettingsStub = sinon.stub(m_appsettings, 'updateAppsettings').callsFake(
                 function fakeFn(settings, callback) {
-                    return callback(null, 'new-source-id');
+                    return callback(null, settings);
             });
             var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
             sinon.stub(azcollectSvc, 'register_o365').resolves({
@@ -366,12 +370,10 @@ describe('Master Function Units', function() {
             m_o365collector.checkRegister(testMock.context, testMock.timer, azcollectSvc, 
                 function(err, resp){
                     if (err) {
-                        updateSettingsStub.restore();
                         return done(err);
                     } else {
                         sinon.assert.callCount(updateSettingsStub, 0);
                         sinon.assert.callCount(azcollectSvc.register_o365, 0);
-                        updateSettingsStub.restore();
                         return done();
                     }
             });
@@ -379,9 +381,9 @@ describe('Master Function Units', function() {
         
         it('checks updateSettings is called during registration', function(done) {
             process.env.O365_COLLECTOR_ID = null;
-            var updateSettingsStub = sinon.stub(m_appsettings, 'updateAppsettings').callsFake(
+            updateSettingsStub = sinon.stub(m_appsettings, 'updateAppsettings').callsFake(
                 function fakeFn(settings, callback) {
-                    return callback(null, 'new-source-id');
+                    return callback(null, settings);
             });
             var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
             sinon.stub(azcollectSvc, 'register_o365').resolves({
@@ -396,7 +398,6 @@ describe('Master Function Units', function() {
             m_o365collector.checkRegister(testMock.context, testMock.timer, azcollectSvc, 
                 function(err, resp){
                     if (err) {
-                        updateSettingsStub.restore();
                         return done(err);
                     } else {
                         var expectedSettings = {
@@ -405,7 +406,6 @@ describe('Master Function Units', function() {
                         };               
                         sinon.assert.callCount(updateSettingsStub, 1);
                         sinon.assert.calledWith(updateSettingsStub, expectedSettings);
-                        updateSettingsStub.restore();
                         return done();
                     }
             });

@@ -21,7 +21,7 @@ exports.checkUpdate = function (context, AlertlogicMasterTimer, callback) {
         return callback(null);
     } else {
         // Endpoint settings do not exist. Update them.
-        let  alApiEndpoint = process.env.CUSTOMCONNSTR_APP_AL_API_ENDPOINT;
+        let alApiEndpoint = process.env.CUSTOMCONNSTR_APP_AL_API_ENDPOINT;
         let alResidency = process.env.CUSTOMCONNSTR_APP_AL_RESIDENCY;
         let aimsCreds = {
             access_key_id : process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID,

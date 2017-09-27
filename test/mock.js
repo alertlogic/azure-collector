@@ -26,6 +26,8 @@ process.env.O365_TENANT_ID = 'test.onmicrosoft.com';
 process.env.APP_RESOURCE_GROUP = 'resource-group';
 process.env.O365_COLLECTOR_ID = 'o365-collector-id';
 process.env.O365_HOST_ID = 'o365-host-id';
+process.env.CUSTOMCONNSTR_APP_AL_RESIDENCY = 'default';
+process.env.CUSTOMCONNSTR_APP_AL_API_ENDPOINT = 'al-api-endpoint';
 
 var context = {
     invocationId: 'ID',
