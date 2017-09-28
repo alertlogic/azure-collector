@@ -190,7 +190,7 @@ A notification contains a link to the actual data which is retrieved by the `Col
 1. Run Master function locally: `npm run local-master`
 1. Run Updater function locally: `npm run local-updater`
 1. Run O365WebHook function locally: `npm run local-o365webhook`
-1. Run `npm test` in order to perform code analysis.
+1. Run `npm test` in order to perform code analysis and unit tests.
 
 Please use the following [code style](https://github.com/airbnb/javascript) as much as possible.
 

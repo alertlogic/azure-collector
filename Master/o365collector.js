@@ -43,7 +43,7 @@ exports.checkRegister = function (context, AlertlogicMasterTimer, azcollectSvc, 
 
 exports.checkin = function (context, AlertlogicMasterTimer, azcollectSvc, callback) {
     return m_o365mgmnt.subscriptionsList(
-        function(listErr, subscrptions, httpRequest, response) {
+        function(listErr, subscriptions, httpRequest, response) {
             if (listErr) {
                 azcollectSvc.checkin('o365',
                     process.env.O365_COLLECTOR_ID, 'error', `${listErr}`)
@@ -53,15 +53,14 @@ exports.checkin = function (context, AlertlogicMasterTimer, azcollectSvc, callba
                     .catch(function(exception) {
                         return callback(`Unable to checkin ${exception}`);
                     });
-                return callback(listErr);
             } else {
-                return _checkEnableAuditStreams(context, subscrptions,
+                return _checkEnableAuditStreams(context, subscriptions,
                     function(enableErr, checkResults) {
                         if (enableErr) {
                             azcollectSvc.checkin('o365',
                                 process.env.O365_COLLECTOR_ID, 'error', `${enableErr}`)
                                 .then(resp => {
-                                    callback(null, resp);
+                                    return callback(null, resp);
                                 })
                                 .catch(function(exception) {
                                     return callback(`Unable to checkin ${exception}`);
@@ -70,7 +69,7 @@ exports.checkin = function (context, AlertlogicMasterTimer, azcollectSvc, callba
                             azcollectSvc.checkin('o365',
                                 process.env.O365_COLLECTOR_ID, 'ok', `${checkResults}`)
                                 .then(resp => {
-                                    callback(null, resp);
+                                    return callback(null, resp);
                                 })
                                 .catch(function(exception) {
                                     return callback(`Unable to checkin ${exception}`);
