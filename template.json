@@ -9,13 +9,13 @@
         "Storage Name": {
             "type": "String"
         },
-        "Alertlogic Access Key Id": {
+        "Alert Logic Access Key Id": {
             "type": "String"
         },
-        "Alertlogic Secret Key": {
+        "Alert Logic Secret Key": {
             "type": "SecureString"
         },
-        "Alertlogic API endpoint": {
+        "Alert Logic API endpoint": {
             "type": "String",
             "defaultValue": "api.global-services.global.alertlogic.com",
             "allowedValues" : [
@@ -23,7 +23,7 @@
                 "api.global-integration.product.dev.alertlogic.com"
             ]
         },
-        "Alertlogic Data Residency": {
+        "Alert Logic Data Residency": {
             "type": "String",
             "defaultValue": "default",
             "allowedValues": [
@@ -142,22 +142,22 @@
                         {
                             "name": "APP_CI_ACCESS_KEY_ID",
                             "type": "Custom",
-                            "connectionString": "[parameters('Alertlogic Access Key Id')]"
+                            "connectionString": "[parameters('Alert Logic Access Key Id')]"
                         },
                         {
                             "name": "APP_CI_SECRET_KEY",
                             "type": "Custom",
-                            "connectionString": "[parameters('Alertlogic Secret Key')]"
+                            "connectionString": "[parameters('Alert Logic Secret Key')]"
                         },
                         {
                             "name": "APP_AL_API_ENDPOINT",
                             "type": "Custom",
-                            "connectionString": "[parameters('Alertlogic API endpoint')]"
+                            "connectionString": "[parameters('Alert Logic API endpoint')]"
                         },
                         {
                             "name": "APP_AL_RESIDENCY",
                             "type": "Custom",
-                            "connectionString": "[parameters('Alertlogic Data Residency')]"
+                            "connectionString": "[parameters('Alert Logic Data Residency')]"
                         }
                     ]
                 },

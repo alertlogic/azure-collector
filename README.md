@@ -94,10 +94,10 @@ Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform
 2. Fill in required template parameters and click the `Purchase` button to start a deployment. I.e.:
    - `Name` - Any name
    - `Storage Name` - Any Storage Account name (that does not currently exist)
-   - `Alertlogic Access Key Id` - `access_key_id` returned from AIMs [above](#create_an_alert_logic_access_key)
-   - `Alertlogic Secret Key` - `secret_key` returned from AIMs [above](#create_an_alert_logic_access_key)
-   - `Alertlogic API endpoint` - usually `api.global-services.global.alertlogic.com` 
-   - `Alertlogic Data Residency` - usually `default`
+   - `Alert Logic Access Key Id` - `access_key_id` returned from AIMs [above](#create_an_alert_logic_access_key)
+   - `Alert Logic Secret Key` - `secret_key` returned from AIMs [above](#create_an_alert_logic_access_key)
+   - `Alert Logic API endpoint` - usually `api.global-services.global.alertlogic.com` 
+   - `Alert Logic Data Residency` - usually `default`
    - `Office365 Content Streams` - The list of streams you would like to collect.  Valid values are:
         - ["Audit.AzureActiveDirectory","Audit.Exchange","Audit.SharePoint","Audit.General", "DLP.All"]
    - `Office365 Tenant Id` - The GUID of the tenant e.g. `alazurealertlogic.onmicrosoft.com`
