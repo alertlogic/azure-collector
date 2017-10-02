@@ -60,7 +60,7 @@ Make a note of the following fields returned in the response:
    * ACCOUNT ID
    * TOKEN
 
-Use the authentication token returned in the response to create access keys for the Azure application deployed in the next section.  Issue the following curl command (where `<TOKEN>` is the auth token, `<ACCOUNT_ID>` is the account id, and `<USER_ID>` is the user id returned above):
+Use the authentication token returned in the response to create access keys for the Azure application deployed in the next section.  Issue the following curl command (where `<TOKEN>` is the auth token, `<ACCOUNT_ID>` is the account ID, and `<USER_ID>` is the user ID returned above):
 
 ```
 curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.alertlogic.com/aims/v1/<ACCOUNT_ID>/users/<USER_ID>/access_keys
@@ -94,17 +94,17 @@ Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform
 2. Fill in required template parameters and click the `Purchase` button to start a deployment. I.e.:
    - `Name` - Any name
    - `Storage Name` - Any Storage Account name (that does not currently exist)
-   - `Alert Logic Access Key Id` - `access_key_id` returned from AIMs [above](#create_an_alert_logic_access_key)
+   - `Alert Logic Access Key ID` - `access_key_id` returned from AIMs [above](#create_an_alert_logic_access_key)
    - `Alert Logic Secret Key` - `secret_key` returned from AIMs [above](#create_an_alert_logic_access_key)
    - `Alert Logic API endpoint` - usually `api.global-services.global.alertlogic.com` 
    - `Alert Logic Data Residency` - usually `default`
    - `Office365 Content Streams` - The list of streams you would like to collect.  Valid values are:
         - ["Audit.AzureActiveDirectory","Audit.Exchange","Audit.SharePoint","Audit.General", "DLP.All"]
-   - `Office365 Tenant Id` - The GUID of the tenant e.g. `alazurealertlogic.onmicrosoft.com`
-   - `Service Principal Id` - The `Object ID` of the application that created the subscription.
+   - `Office365 Tenant ID` - The GUID of the tenant e.g. `alazurealertlogic.onmicrosoft.com`
+   - `Service Principal ID` - The `Object ID` of the application that created the subscription.
    You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_ -> Link under 
 _Managed application in local directory_ -> _Properties_ -> _Object ID_
-   - `App Client Id` - The GUID of your application that created the subscription.
+   - `App Client ID` - The GUID of your application that created the subscription.
                      You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
    - `App Client Secret` - The secret key of your application from _App Registrations_
    - `Repository URL` - must be `https://github.com/alertlogic/azure-collector.git`
