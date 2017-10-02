@@ -16,12 +16,12 @@ const m_appSettings = require('./appsettings');
 
 exports.checkUpdate = function (context, AlertlogicMasterTimer, callback) {
     if (process.env.APP_INGEST_ENDPOINT && process.env.APP_AZCOLLECT_ENDPOINT) {
-        context.log('DEBUG: Reuse Ingest endpoint', process.env.APP_INGEST_ENDPOINT);
-        context.log('DEBUG: Reuse Azcollect endpoint', process.env.APP_AZCOLLECT_ENDPOINT);
+        context.log.verbose('Reuse Ingest endpoint', process.env.APP_INGEST_ENDPOINT);
+        context.log.verbose('Reuse Azcollect endpoint', process.env.APP_AZCOLLECT_ENDPOINT);
         return callback(null);
     } else {
         // Endpoint settings do not exist. Update them.
-        let  alApiEndpoint = process.env.CUSTOMCONNSTR_APP_AL_API_ENDPOINT;
+        let alApiEndpoint = process.env.CUSTOMCONNSTR_APP_AL_API_ENDPOINT;
         let alResidency = process.env.CUSTOMCONNSTR_APP_AL_RESIDENCY;
         let aimsCreds = {
             access_key_id : process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID,
