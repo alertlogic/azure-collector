@@ -9,13 +9,13 @@
         "Storage Name": {
             "type": "String"
         },
-        "Alertlogic Access Key Id": {
+        "Alert Logic Access Key ID": {
             "type": "String"
         },
-        "Alertlogic Secret Key": {
+        "Alert Logic Secret Key": {
             "type": "SecureString"
         },
-        "Alertlogic API endpoint": {
+        "Alert Logic API endpoint": {
             "type": "String",
             "defaultValue": "api.global-services.global.alertlogic.com",
             "allowedValues" : [
@@ -23,7 +23,7 @@
                 "api.global-integration.product.dev.alertlogic.com"
             ]
         },
-        "Alertlogic Data Residency": {
+        "Alert Logic Data Residency": {
             "type": "String",
             "defaultValue": "default",
             "allowedValues": [
@@ -34,13 +34,13 @@
             "type": "Array",
             "defaultValue": ["Audit.AzureActiveDirectory", "Audit.Exchange", "Audit.SharePoint", "Audit.General"]
         },
-        "Office365 Tenant Id": {
+        "Office365 Tenant ID": {
             "type": "String"
         },
-        "Service Principal Id": {
+        "Service Principal ID": {
             "type": "String"
         },
-        "App Client Id": {
+        "App Client ID": {
             "type": "String"
         },
         "App Client Secret": {
@@ -109,7 +109,7 @@
                         },
                         {
                             "name": "O365_TENANT_ID",
-                            "value": "[parameters('Office365 Tenant Id')]"
+                            "value": "[parameters('Office365 Tenant ID')]"
                         },
                         {
                             "name": "O365_CONTENT_STREAMS",
@@ -132,7 +132,7 @@
                         {
                             "name": "APP_CLIENT_ID",
                             "type": "Custom",
-                            "connectionString": "[parameters('App Client Id')]"
+                            "connectionString": "[parameters('App Client ID')]"
                         },
                         {
                             "name": "APP_CLIENT_SECRET",
@@ -142,22 +142,22 @@
                         {
                             "name": "APP_CI_ACCESS_KEY_ID",
                             "type": "Custom",
-                            "connectionString": "[parameters('Alertlogic Access Key Id')]"
+                            "connectionString": "[parameters('Alert Logic Access Key ID')]"
                         },
                         {
                             "name": "APP_CI_SECRET_KEY",
                             "type": "Custom",
-                            "connectionString": "[parameters('Alertlogic Secret Key')]"
+                            "connectionString": "[parameters('Alert Logic Secret Key')]"
                         },
                         {
                             "name": "APP_AL_API_ENDPOINT",
                             "type": "Custom",
-                            "connectionString": "[parameters('Alertlogic API endpoint')]"
+                            "connectionString": "[parameters('Alert Logic API endpoint')]"
                         },
                         {
                             "name": "APP_AL_RESIDENCY",
                             "type": "Custom",
-                            "connectionString": "[parameters('Alertlogic Data Residency')]"
+                            "connectionString": "[parameters('Alert Logic Data Residency')]"
                         }
                     ]
                 },
@@ -195,7 +195,7 @@
             "apiVersion": "2015-07-01",
             "properties": {
                 "roleDefinitionId": "[variables('contributor')]",
-                "principalId": "[parameters('Service Principal Id')]",
+                "principalId": "[parameters('Service Principal ID')]",
                 "scope": "[variables('resourceGroupId')]"
             }
         }
