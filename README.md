@@ -78,7 +78,7 @@ Make a note of the `access_key_id` and `secret_key` values for use in the deploy
 delete some keys in order to create new ones.  Use the following command to delete access keys:
 
 ```
-curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.alertlogic.com/aims/v1/<ACCOUNT_ID>/users/<USER_ID>/access_keys/<ACCESS_KEY_ID>
+curl -X DELETE -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.alertlogic.com/aims/v1/<ACCOUNT_ID>/users/<USER_ID>/access_keys/<ACCESS_KEY_ID>
 ```
 
 ## Function deployment
