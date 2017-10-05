@@ -50,9 +50,9 @@ blade itself.
 
 From the Bash command line in [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart) run the following commands:
 ```
-export AL_USER_NAME='user@alertlogic.com'
+export AL_USERNAME='user@alertlogic.com'
 export AL_PASSWORD='!user-password'
-auth=$(curl -X POST -s -u $AL_USER_NAME:$AL_PASSWORD https://api.global-services.global.alertlogic.com/aims/v1/authenticate); export AL_ACCOUNT_ID=$(echo $auth | jq -r '.authentication.account.id'); export AL_USER_ID=$(echo $auth | jq -r '.authentication.user.id'); export AL_TOKEN=$(echo $auth | jq -r '.authentication.token'); unset AL_USER_NAME; unset AL_PASSWORD; curl -s -X POST -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/access_keys | jq
+auth=$(curl -X POST -s -u $AL_USERNAME:$AL_PASSWORD https://api.global-services.global.alertlogic.com/aims/v1/authenticate); [ "$auth" ] || echo "Authentication failure"; export AL_ACCOUNT_ID=$(echo $auth | jq -r '.authentication.account.id'); export AL_USER_ID=$(echo $auth | jq -r '.authentication.user.id'); export AL_TOKEN=$(echo $auth | jq -r '.authentication.token'); unset AL_USERNAME; unset AL_PASSWORD; curl -s -X POST -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/access_keys | jq
 
 ```
 An example of a successful response is:
