@@ -48,37 +48,37 @@ blade itself.
 
 ## Create an Alert Logic Access Key
 
-Login and get an authentication token from the Alert Logic Cloud Insight product [AIMS API](https://console.product.dev.alertlogic.com/api/aims/).  From the command line use [curl](https://en.wikipedia.org/wiki/CURL) as follows (where `<user>` is your CloudInsight user and `<pwd>` is your CloudInsight password):
+From the Bash command line in [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart) run the following commands:
+```
+export AL_USER_NAME='user@alertlogic.com'
+export AL_PASSWORD='!user-password'
+auth=$(curl -X POST -s -u $AL_USER_NAME:$AL_PASSWORD https://api.global-services.global.alertlogic.com/aims/v1/authenticate); export AL_ACCOUNT_ID=$(echo $auth | jq -r '.authentication.account.id'); export AL_USER_ID=$(echo $auth | jq -r '.authentication.user.id'); export AL_TOKEN=$(echo $auth | jq -r '.authentication.token'); unset AL_USER_NAME; unset AL_PASSWORD; curl -s -X POST -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/access_keys | jq
 
 ```
-curl -X POST -v -u '<user>:<pwd>' https://api.global-services.global.alertlogic.com/aims/v1/authenticate
-```
-
-Make a note of the following fields returned in the response:
-
-   * USER ID
-   * ACCOUNT ID
-   * TOKEN
-
-Use the authentication token returned in the response to create access keys for the Azure application deployed in the next section.  Issue the following curl command (where `<TOKEN>` is the auth token, `<ACCOUNT_ID>` is the account ID, and `<USER_ID>` is the user ID returned above):
-
-```
-curl -X POST -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.alertlogic.com/aims/v1/<ACCOUNT_ID>/users/<USER_ID>/access_keys
-```
-
 An example of a successful response is:
 
 ```
-{"access_key_id":"8bb72b92eb43f0bb","secret_key":"15b74g7fe32b9a0083172b724fa8b84aebfa9325bba2b3bc8933216013e220c1"}
+{
+  "access_key_id": "712c0b413eef41f6",
+  "secret_key": "1234567890b3eea8880d292fb31aa96902242a076d3d0e320cc036eb51bf25ad"
+}
 ```
+
+**Note:** if the output is blank please double-check the Alert Logic user permission, you should have administrator access. More details about AIMS APIs can be found [here](https://console.product.dev.alertlogic.com/api/aims/).
 
 Make a note of the `access_key_id` and `secret_key` values for use in the deployment steps below.
 
 **Note:** Only five access keys can be created per user.  If you get a "limit exceeded" response you will need to
-delete some keys in order to create new ones.  Use the following command to delete access keys:
+delete some keys in order to create new ones.  Use the following command to list access keys:
 
 ```
-curl -X DELETE -H "x-aims-auth-token: <TOKEN>" https://api.global-services.global.alertlogic.com/aims/v1/<ACCOUNT_ID>/users/<USER_ID>/access_keys/<ACCESS_KEY_ID>
+curl -s -X GET -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/access_keys | jq
+```
+
+Then use the selected access_key_id in the following curl command:
+```
+
+curl -X DELETE -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/access_keys/<ACCESS_KEY_ID_HERE>
 ```
 
 ## Function deployment
