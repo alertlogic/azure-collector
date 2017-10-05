@@ -75,7 +75,7 @@ delete some keys in order to create new ones.  Use the following command to list
 curl -s -X GET -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/access_keys | jq
 ```
 
-Then use the selected access_key_id in the following curl command:
+Then use the selected access_key_id in the following curl command to delete it:
 ```
 
 curl -X DELETE -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/access_keys/<ACCESS_KEY_ID_HERE>
