@@ -48,7 +48,7 @@ blade itself.
 
 ## Create an Alert Logic Access Key
 
-From the Bash command line in [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart) run the following commands, where <username> is your Alert Logic user and <password> is your Alert Logic password:
+From the Bash command line in [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart) run the following commands, where `<username>` is your Alert Logic user and `<password>` is your Alert Logic password:
 ```
 export AL_USERNAME='<username>'
 export AL_PASSWORD='<password>'
