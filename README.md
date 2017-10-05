@@ -48,10 +48,10 @@ blade itself.
 
 ## Create an Alert Logic Access Key
 
-From the Bash command line in [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart) run the following commands:
+From the Bash command line in [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart) run the following commands, where <username> is your Alert Logic user and <password> is your Alert Logic password:
 ```
-export AL_USERNAME='!user-name'
-export AL_PASSWORD='!user-password'
+export AL_USERNAME='<username>'
+export AL_PASSWORD='<password>'
 auth=$(curl -X POST -s -u $AL_USERNAME:$AL_PASSWORD https://api.global-services.global.alertlogic.com/aims/v1/authenticate); export AL_ACCOUNT_ID=$(echo $auth | jq -r '.authentication.account.id'); export AL_USER_ID=$(echo $auth | jq -r '.authentication.user.id'); export AL_TOKEN=$(echo $auth | jq -r '.authentication.token'); [ -z $AL_TOKEN ] && echo "Authentication failure"; unset AL_USERNAME; unset AL_PASSWORD; curl -s -X POST -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/access_keys | jq
 ```
 An example of a successful response is:
