@@ -3,8 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "Name": {
-            "type": "String",
-            "defaultValue": "AlertLogicCollector"
+            "type": "String"
         },
         "Storage Name": {
             "type": "String"

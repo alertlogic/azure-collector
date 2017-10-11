@@ -114,17 +114,16 @@ _Managed application in local directory_ -> _Properties_ -> _Object ID_
 You can use either [Azure Cloud Shell](https://docs.microsoft.com/en-gb/azure/cloud-shell/quickstart#start-cloud-shell) or
 local installation of [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
 
-1. Create a resource group with name "AlertLogicCollect" in location "Central US" by executing following command
+1. Create a new resource group in, for example, the "Central US" location by executing following command:
     ```
-    az group create --name AlertLogicCollect --location "Central US"
+    az group create --name <new-resource-group-name> --location "Central US"
     ```
 1. Once created go to `Resource groups` blade and select the resource group.
 1. Select `Access Control (IAM)` and add `Website Contributor` role to AD application identity created above.
-1. Deploy a template by using following command, during its execution enter required parameters when asked
+1. Deploy a template by using following command, during its execution enter required parameters when asked.
     ```
     az group deployment create \
-        --name AlertLogicCollector \
-        --resource-group AlertLogicCollect \
+        --resource-group <new-resource-group-name> \
         --template-uri "https://raw.githubusercontent.com/alertlogic/azure-collector/master/template.json"
     ```
 
