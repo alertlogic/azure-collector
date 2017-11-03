@@ -2,7 +2,6 @@
 
 Alert Logic Office 365 Log Collector
 
-
 # Overview
 
 This repository contains Azure Web application Node.js source code and an ARM template for setting up a data collector in Azure which will collect and forward Office 365 log data to the Alert Logic Cloud Defender Log Manager (LM) feature.
