@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/alertlogic/azure-collector.png?branch=master)](http://travis-ci.org/alertlogic/azure-collector)
 
-Alert Logic Office 365 Log Collector
+AlertLogic Office 365 Log Collector
 
 # Overview
 
