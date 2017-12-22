@@ -53,12 +53,13 @@ class Azcollect extends m_alServiceC.AlServiceC {
         return this.post(`/register/o365`, {body: regBody});
     }
 
-    checkin(collectorType, collectorId, statusVal, descriptionVal) {
+    checkin(collectorType, collectorId, statusVal, descriptionVal, stats) {
         let statusBody = {
             type : collectorType,
             version : m_version.getVersion(),
             status : statusVal,
-            description : descriptionVal
+            description : descriptionVal,
+            statistics : stats
         };
         return this.post(`/checkin/${collectorType}/${collectorId}`, {body: statusBody});
     }
