@@ -159,5 +159,6 @@ var _getAppStats = function(timestamp, callback) {
 
 module.exports = {
     getFunctionStats : _getFunctionStats,
-    getAppStats : _getAppStats
+    getAppStats : _getAppStats,
+    getTableService : getTableService
 };
