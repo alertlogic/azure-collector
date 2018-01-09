@@ -18,10 +18,8 @@ var m_appstats = rewire('../Master/appstats');
 var azureStorage = require('azure-storage');
 
 describe('Master Function appstats.js Units', function() {
-    var private_assignStringToJson;
     
     before(function() {
-        private_assignStringToJson = m_appstats.__get__('assignStringToJson');
     });
     after(function() {
     });
@@ -32,30 +30,6 @@ describe('Master Function appstats.js Units', function() {
     });
             
     describe('Azure web application statistics tests', function() {
-        it('checks assignStringToJson() - simple', function(done) {
-            var expected = JSON.stringify(
-                {
-                    'a':'1',
-                    'b':'2',
-                    'c':'3',
-                }
-            );
-            assert.equal(expected, JSON.stringify(private_assignStringToJson('a=1;b=2;c=3')));
-            done();
-        });
-        
-        it('checks assignStringToJson() - actual', function(done) {
-            var expected = JSON.stringify(
-                {
-                    'DefaultEndpointsProtocol':'https',
-                    'AccountName':'testaccount',
-                    'AccountKey':'S0me+Rea1+Key+Here==',
-                }
-            );
-            assert.equal(expected, JSON.stringify(private_assignStringToJson('DefaultEndpointsProtocol=https;AccountName=testaccount;AccountKey=S0me+Rea1+Key+Here==')));
-            done();
-        });
-
         it('checks getAppStats() empty', function(done) {
             var msTableServiceStub = sinon.stub(azureStorage, 'createTableService').callsFake(
                 function fakeFn(account, key, host) {

@@ -11,6 +11,7 @@
 const async = require('async');
 const util = require('util');
 const moment = require('moment');
+const parse = require('parse-key-value');
 
 const m_alUtil = require('../lib/al_util');
 
@@ -22,41 +23,16 @@ var TableQuery = azureStorage.TableQuery;
 var TableUtilities = azureStorage.TableUtilities;
 var TableService = null;
 
-// For "AccountName=teststorageaccount" returns 
-// {
-//      "AccountName": "teststorageaccount"
-// }
-var assignmentToObj = function(assignString) {
-    const splitIndex = assignString.indexOf('=');
-    const key = assignString.slice(0, splitIndex);
-    const value = assignString.slice(splitIndex + 1);
-    var obj = {};
-    
-    obj[key] = value;
-    return obj;
-};
-
-// For "AccountName=teststorageaccount;AccountKey=key" returns 
-// {
-//      "AccountName": "teststorageaccount",
-//      "AccountKey": "key"
-// }
-var assignStringToJson = function(assignString) {
-    const params = assignString.split(';');
-    return params.reduce(function(acc, current) {
-            return Object.assign(acc, assignmentToObj(current));
-        },{});
+var _initTableService = function() {
+    const storageParams = parse(process.env.AzureWebJobsStorage);
+    return azureStorage.createTableService(
+        storageParams.AccountName, 
+        storageParams.AccountKey, 
+        storageParams.AccountName + '.table.core.windows.net');
 };
 
 var getTableService = function() {
-    if (!TableService) {
-        const storageParams = assignStringToJson(process.env.AzureWebJobsStorage);
-        TableService = azureStorage.createTableService(
-            storageParams.AccountName, 
-            storageParams.AccountKey, 
-            storageParams.AccountName + '.table.core.windows.net');
-    }
-    return TableService;
+    return (TableService) ? TableService : _initTableService();
 };
 
 var getLogTableName = function() {
@@ -85,7 +61,7 @@ var _getInvocationStats = function(entities, accStats) {
     
     return entities.reduce(function(acc, current) {
         if (current.ErrorDetails) {
-            acc.errors += 1;
+            acc.errors++;
         }
         return acc;
     },
@@ -149,11 +125,7 @@ var _getAppStats = function(timestamp, callback) {
             _getFunctionStats(fname, timestamp, mapCallback); 
         },
         function (mapErr, mapsResult) {
-            if (mapErr) {
-                return callback(mapErr);
-            } else {
-                return callback(null, mapsResult);
-            }
+            return (mapErr) ? callback(mapErr) : callback(null, mapsResult);
         });
 };
 
