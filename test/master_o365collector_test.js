@@ -18,6 +18,7 @@ var m_o365mgmnt = require('../lib/o365_mgmnt');
 var m_azcollect = require('../Master/azcollect');
 var m_o365collector = rewire('../Master/o365collector');
 var m_appsettings = require('../Master/appsettings');
+var m_appstats = require('../Master/appstats');
 
 describe('Master Function o365collector.js Units', function() {
     var private_checkEnableAuditStreams;
@@ -198,7 +199,7 @@ describe('Master Function o365collector.js Units', function() {
     });
 
     describe('O365 collector checkin tests', function() {
-        it('checks successfull OK checkin', function(done) {
+        it('checks successful OK checkin', function(done) {
             process.env.O365_CONTENT_STREAMS = 
                 '["Audit.AzureActiveDirectory", "Audit.General"]';
             var enabledStreams = [
@@ -227,6 +228,11 @@ describe('Master Function o365collector.js Units', function() {
                 function fakeFn(callback) {
                     return callback(null, enabledStreams, null, null);
             });
+            var expectedStats = [{"Master":{"invocations":20,"errors":1}}];
+            var getAppStatsStub = sinon.stub(m_appstats, 'getAppStats').callsFake(
+                function fakeFn(ts, callback) {
+                    return callback(null, expectedStats);
+            });
             var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
             sinon.stub(azcollectSvc, 'checkin').resolves([{}]);
 
@@ -234,18 +240,76 @@ describe('Master Function o365collector.js Units', function() {
                 function(err, resp){
                     if (err) {
                         msSubscriptionsListStub.restore();
+                        getAppStatsStub.restore();
                         return done(err);
                     } else {                 
                         sinon.assert.callCount(azcollectSvc.checkin, 1);
                         sinon.assert.calledWith(azcollectSvc.checkin,
-                            'o365', process.env.O365_COLLECTOR_ID, 'ok');
+                            'o365', process.env.O365_COLLECTOR_ID, 'ok', sinon.match.any, expectedStats);
                         msSubscriptionsListStub.restore();
+                        getAppStatsStub.restore();
                         return done();
                     }
             });
         });
+        
+        it('checks successful OK checkin, stats Error', function(done) {
+            process.env.O365_CONTENT_STREAMS = 
+                '["Audit.AzureActiveDirectory", "Audit.General"]';
+            var enabledStreams = [
+                {
+                    "contentType": "Audit.AzureActiveDirectory",
+                    "status": "enabled",
+                    "webhook": {
+                        "authId": null,
+                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
+                        "expiration": "",
+                        "status": "enabled"
+                    }
+                },
+                {
+                    "contentType": "Audit.General",
+                    "status": "enabled",
+                    "webhook": {
+                        "authId": null,
+                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
+                        "expiration": "",
+                        "status": "disabled"
+                    }
+                }
+            ];
+            var msSubscriptionsListStub = sinon.stub(m_o365mgmnt, 'subscriptionsList').callsFake(
+                function fakeFn(callback) {
+                    return callback(null, enabledStreams, null, null);
+            });
+            var statsError = 'Sample stats error';
+            var getAppStatsStub = sinon.stub(m_appstats, 'getAppStats').callsFake(
+                function fakeFn(ts, callback) {
+                    return callback(statsError);
+            });
+            var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
+            sinon.stub(azcollectSvc, 'checkin').resolves([{}]);
+            
+            var expectedStats = [{error : `Error getting application stats: ${statsError}`}];
+            m_o365collector.checkin(testMock.context, testMock.timer, azcollectSvc, 
+                function(err, resp){
+                    if (err) {
+                        msSubscriptionsListStub.restore();
+                        getAppStatsStub.restore();
+                        return done(err);
+                    } else {                 
+                        sinon.assert.callCount(azcollectSvc.checkin, 1);
+                        sinon.assert.calledWith(azcollectSvc.checkin,
+                            'o365', process.env.O365_COLLECTOR_ID, 'ok', sinon.match.any, expectedStats);
+                        msSubscriptionsListStub.restore();
+                        getAppStatsStub.restore();
+                        return done();
+                    }
+            });
+        });
+        
                 
-        it('checks successfull Error checkin during Office subscriptionList error', function(done) {
+        it('checks successful Error checkin during Office subscriptionList error', function(done) {
             process.env.O365_CONTENT_STREAMS = 
                 '["Audit.AzureActiveDirectory", "Audit.General"]';
             var enabledStreams = [
@@ -275,6 +339,11 @@ describe('Master Function o365collector.js Units', function() {
                 function fakeFn(callback) {
                     return callback(listError);
             });
+            const expectedStats = [{"Master":{"invocations":20,"errors":1}}];
+            var getAppStatsStub = sinon.stub(m_appstats, 'getAppStats').callsFake(
+                function fakeFn(ts, callback) {
+                    return callback(null, expectedStats);
+            });
             var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
             sinon.stub(azcollectSvc, 'checkin').resolves([{}]);
 
@@ -282,18 +351,20 @@ describe('Master Function o365collector.js Units', function() {
                 function(err, resp){
                     if (err) {
                         msSubscriptionsListStub.restore();
+                        getAppStatsStub.restore();
                         return done(err);
                     } else {                 
                         sinon.assert.callCount(azcollectSvc.checkin, 1);
                         sinon.assert.calledWith(azcollectSvc.checkin,
-                            'o365', process.env.O365_COLLECTOR_ID, 'error', listError);
+                            'o365', process.env.O365_COLLECTOR_ID, 'error', listError, expectedStats);
                         msSubscriptionsListStub.restore();
+                        getAppStatsStub.restore();
                         return done(null);
                     }
             });
         });
         
-        it('checks successfull Error checkin during Office subscriptionStart error', function(done) {
+        it('checks successful Error checkin during Office subscriptionStart error', function(done) {
             process.env.O365_CONTENT_STREAMS = 
                 '["Audit.AzureActiveDirectory", "Audit.General"]';
             var enabledStreams = [
@@ -323,6 +394,11 @@ describe('Master Function o365collector.js Units', function() {
                 function fakeFn(callback) {
                     return callback(null, enabledStreams, null, null);
             });
+            const expectedStats = [{"Master":{"invocations":20,"errors":1}}];
+            var getAppStatsStub = sinon.stub(m_appstats, 'getAppStats').callsFake(
+                function fakeFn(ts, callback) {
+                    return callback(null, expectedStats);
+            });
             msSubscriptionsStartStub.restore();
             var msSubscriptionsStartErrorStub = sinon.stub(m_o365mgmnt, 'subscriptionsStart').callsFake(
             function fakeFn(contentType, webhook, callback) {
@@ -336,13 +412,15 @@ describe('Master Function o365collector.js Units', function() {
                     if (err) {
                         msSubscriptionsListStub.restore();
                         msSubscriptionsStartErrorStub.restore();
+                        getAppStatsStub.restore();
                         return done(err);
                     } else {                 
                         sinon.assert.callCount(azcollectSvc.checkin, 1);
                         sinon.assert.calledWith(azcollectSvc.checkin,
-                            'o365', process.env.O365_COLLECTOR_ID, 'error', startError);
+                            'o365', process.env.O365_COLLECTOR_ID, 'error', startError, expectedStats);
                         msSubscriptionsListStub.restore();
                         msSubscriptionsStartErrorStub.restore();
+                        getAppStatsStub.restore();
                         return done(null);
                     }
             });

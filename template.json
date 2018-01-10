@@ -18,8 +18,7 @@
             "type": "String",
             "defaultValue": "api.global-services.global.alertlogic.com",
             "allowedValues" : [
-                "api.global-services.global.alertlogic.com",
-                "api.global-integration.product.dev.alertlogic.com"
+                "api.global-services.global.alertlogic.com"
             ]
         },
         "Alert Logic Data Residency": {
