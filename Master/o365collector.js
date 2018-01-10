@@ -13,6 +13,7 @@ const async = require('async');
 
 const m_alServiceC = require('../lib/al_servicec');
 const m_appSettings = require('./appsettings');
+const m_appStats = require('./appstats');
 const m_o365mgmnt = require('../lib/o365_mgmnt');
 
 
@@ -42,11 +43,26 @@ exports.checkRegister = function (context, AlertlogicMasterTimer, azcollectSvc, 
 };
 
 exports.checkin = function (context, AlertlogicMasterTimer, azcollectSvc, callback) {
-    return m_o365mgmnt.subscriptionsList(
-        function(listErr, subscriptions, httpRequest, response) {
-            if (listErr) {
+    async.waterfall([
+        function(asyncCallback) {
+            m_o365mgmnt.subscriptionsList(asyncCallback);
+        },
+        function(subscriptions, httpRequest, response, asyncCallback) {
+            _checkEnableAuditStreams(context, subscriptions, asyncCallback);
+        }],
+    function(error, checkResults) {
+        m_appStats.getAppStats(AlertlogicMasterTimer, function(statsErr, appStats) {
+            var stats = null;
+            if (statsErr) {
+                stats = [{
+                    error : `Error getting application stats: ${statsErr}`
+                }];
+            } else {
+                stats = appStats;
+            }
+            if (error) {
                 azcollectSvc.checkin('o365',
-                    process.env.O365_COLLECTOR_ID, 'error', `${listErr}`)
+                    process.env.O365_COLLECTOR_ID, 'error', `${error}`, stats)
                     .then(resp => {
                         return callback(null, resp);
                     })
@@ -54,29 +70,16 @@ exports.checkin = function (context, AlertlogicMasterTimer, azcollectSvc, callba
                         return callback(`Unable to checkin ${exception}`);
                     });
             } else {
-                return _checkEnableAuditStreams(context, subscriptions,
-                    function(enableErr, checkResults) {
-                        if (enableErr) {
-                            azcollectSvc.checkin('o365',
-                                process.env.O365_COLLECTOR_ID, 'error', `${enableErr}`)
-                                .then(resp => {
-                                    return callback(null, resp);
-                                })
-                                .catch(function(exception) {
-                                    return callback(`Unable to checkin ${exception}`);
-                                });
-                        } else {
-                            azcollectSvc.checkin('o365',
-                                process.env.O365_COLLECTOR_ID, 'ok', `${checkResults}`)
-                                .then(resp => {
-                                    return callback(null, resp);
-                                })
-                                .catch(function(exception) {
-                                    return callback(`Unable to checkin ${exception}`);
-                                });
-                        }
-                });
+                azcollectSvc.checkin('o365',
+                    process.env.O365_COLLECTOR_ID, 'ok', `${checkResults}`, stats)
+                    .then(resp => {
+                        return callback(null, resp);
+                    })
+                    .catch(function(exception) {
+                        return callback(`Unable to checkin ${exception}`);
+                    });
             }
+        });
     });
 };
 
