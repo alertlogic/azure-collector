@@ -47,7 +47,7 @@ module.exports = function (context, AlertlogicMasterTimer) {
         },
         function(azcollectSvc, asyncCallback) {
             return m_o365collector.checkin(context,
-                    AlertlogicMasterTimer, azcollectSvc,
+                    AlertlogicMasterTimer.last, azcollectSvc,
                 function(azcollectError, checkinResp) {
                     if (azcollectError) {
                         return asyncCallback(`Checkin failed ${azcollectError}`);
