@@ -25,10 +25,11 @@ var TableService = null;
 
 var _initTableService = function() {
     const storageParams = parse(process.env.AzureWebJobsStorage);
-    return azureStorage.createTableService(
+    TableService = azureStorage.createTableService(
         storageParams.AccountName, 
         storageParams.AccountKey, 
         storageParams.AccountName + '.table.core.windows.net');
+    return TableService;
 };
 
 var getTableService = function() {
