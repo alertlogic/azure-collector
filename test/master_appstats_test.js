@@ -24,7 +24,7 @@ describe('Master Function appstats.js Units', function() {
     after(function() {
     });
     beforeEach(function() {
-        m_appstats.__set__({TableService : null});
+        m_appstats.__set__({g_tableService : null});
     });
     afterEach(function() {
     });

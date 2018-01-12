@@ -12,27 +12,29 @@ const async = require('async');
 const util = require('util');
 const moment = require('moment');
 const parse = require('parse-key-value');
+const azureStorage = require('azure-storage');
+
 
 const m_alUtil = require('../lib/al_util');
 
 const STATS_PERIOD_MINUTES = 15;
 const APP_FUNCTIONS = ['Master', 'O365WebHook', 'Updater'];
 
-var azureStorage = require('azure-storage');
 var TableQuery = azureStorage.TableQuery;
 var TableUtilities = azureStorage.TableUtilities;
-var TableService = null;
+var g_tableService = null;
 
 var _initTableService = function() {
     const storageParams = parse(process.env.AzureWebJobsStorage);
-    return azureStorage.createTableService(
+    g_tableService = azureStorage.createTableService(
         storageParams.AccountName, 
         storageParams.AccountKey, 
         storageParams.AccountName + '.table.core.windows.net');
+    return g_tableService;
 };
 
 var getTableService = function() {
-    return (TableService) ? TableService : _initTableService();
+    return (g_tableService) ? g_tableService : _initTableService();
 };
 
 var getLogTableName = function() {
