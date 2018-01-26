@@ -76,8 +76,8 @@ var debugEvent = {
 // Local development timer object
 var timer = {
     isPastDue: false,
-    last: '2018-01-24T13:30:00',
-    next: '2018-01-26T14:45:00'
+    last: '2018-01-28T14:30:00',
+    next: '2018-01-27T14:45:00'
 };
 
 

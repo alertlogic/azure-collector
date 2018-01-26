@@ -36,10 +36,13 @@ var _getQueueService = function() {
     return (QueueService) ? QueueService : _initQueueService();
 };
 
-var _fetch = function(timer, callback) {
+var _fetch = function(callback) {
     var queueService = _getQueueService();
+    var options = {};
     
-    queueService.getMessage(_getStateQueueName(),
+    options.visibilityTimeout = 180;
+    
+    queueService.getMessage(_getStateQueueName(), options,
         function(error, message) {
             if (error || !message) {
                 // Another instance of a function is running.
@@ -47,11 +50,7 @@ var _fetch = function(timer, callback) {
             } else {
                 const decoded = base64Encoder.decode(message.messageText);
                 var storedState = JSON.parse(decoded);
-                var state = {
-                    listStartTs : moment.utc(storedState.lastCollectedTs).add(1, 'milliseconds').toISOString(),
-                    listEndTs :  timer.last
-                };
-                return callback(null, state, message);
+                return callback(null, storedState, message);
             }
     });
 };
@@ -63,34 +62,53 @@ var _commit = function(message, callback) {
             message.messageId, message.popReceipt, callback);
 };
 
-var _update = function(context, timer, contentList, stateMsg, callback) {
-    var lastTs = null;
-    
-    if (contentList.length > 0) {
-        const last = contentList.pop();
-        lastTs =  last.contentCreated;
-    } else {
-        lastTs = timer.last;
-    }
-    
-    const newState = JSON.stringify({
-        lastCollectedTs : lastTs
-    });
-        
-    _commit(stateMsg, function(commitErr) {
-        if (commitErr)
-        {
-            return callback(commitErr);
+var _getCollectState = function(timer, contentLists) {
+    return contentLists.reduce(function(acc, currentStreamContent) {
+        const contentLength = currentStreamContent.contentList.length;
+        var lastTs = null;
+        if (contentLength > 0) {
+            const last = currentStreamContent.contentList[contentLength - 1];
+            lastTs =  last.contentCreated;
         } else {
-            context.bindings.O365ListState.push(newState);
-            return callback(null, context);
+            lastTs = timer.last;
         }
-    });
+        
+        var currentStatus = {
+            streamName : currentStreamContent.streamName,
+            lastCollectedTs : lastTs
+        };
+        acc.push(currentStatus);
+        return acc;
+    }, []);
+};
+
+// Generating stream specific list state for stored state.
+// For example, from storedState
+// [{
+//  "streamName" : "Audit.General",
+//  "lastCollectedTs":"2018-01-26T14:19:00.094Z"
+// }]
+// getting the following list for "Audit.General":
+// {
+//  "streamName" : "Audit.General",
+//  "listStartTs":"2018-01-26T14:19:00.095Z",
+//  "listEndTs":"2018-01-26T14:24:00"
+// }
+//
+var _getStreamListState = function(stream, storedState) {
+    var streamStoredState = storedState.find(obj => obj.streamName === stream);
+    var listState = {
+        streamName : stream,
+        listStartTs : moment.utc(streamStoredState.lastCollectedTs).add(1, 'milliseconds').toISOString()
+    };
+    return listState;
 };
 
 
 module.exports = {
     getQueueService : _getQueueService,
+    getStreamListState : _getStreamListState,
+    getCollectState : _getCollectState,
     fetch : _fetch,
-    update : _update
+    commit : _commit
 };

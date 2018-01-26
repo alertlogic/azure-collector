@@ -1,3 +1,10 @@
 {
-    "functionTimeout": "00:10:00"
+    "functionTimeout": "00:10:00",
+    "queues": {
+      "maxPollingInterval": 60000,
+      "visibilityTimeout" : "00:03:00",
+      "batchSize": 16,
+      "maxDequeueCount": 10,
+      "newBatchThreshold": 8
+    }
 }
