@@ -62,7 +62,7 @@ var _commit = function(message, callback) {
             message.messageId, message.popReceipt, callback);
 };
 
-var _getCollectState = function(timer, contentLists) {
+var _getCollectState = function(contentLists) {
     return contentLists.reduce(function(acc, currentStreamContent) {
         const contentLength = currentStreamContent.contentList.length;
         var lastTs = null;
@@ -70,7 +70,7 @@ var _getCollectState = function(timer, contentLists) {
             const last = currentStreamContent.contentList[contentLength - 1];
             lastTs =  last.contentCreated;
         } else {
-            lastTs = timer.last;
+            lastTs = currentStreamContent.listTs;
         }
         
         var currentStatus = {
@@ -97,10 +97,19 @@ var _getCollectState = function(timer, contentLists) {
 //
 var _getStreamListState = function(stream, storedState) {
     var streamStoredState = storedState.find(obj => obj.streamName === stream);
-    var listState = {
-        streamName : stream,
-        listStartTs : moment.utc(streamStoredState.lastCollectedTs).add(1, 'milliseconds').toISOString()
-    };
+    var listState = null; 
+    
+    if (streamStoredState) {
+        listState = {
+            streamName : stream,
+            listStartTs : moment.utc(streamStoredState.lastCollectedTs).add(1, 'milliseconds').toISOString()
+        };
+    } else {
+        listState = {
+            streamName : stream,
+            listStartTs : moment.utc().format()
+        };
+    }
     return listState;
 };
 

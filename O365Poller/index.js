@@ -11,6 +11,7 @@
  */
  
 const async = require('async');
+const moment = require('moment');
 
 const m_o365mgmnt = require('../lib/o365_mgmnt');
 const m_state = require('./liststate');
@@ -52,7 +53,7 @@ var processListResponse = function(listError,
     }
 };
 
-var fillOutputQueues = function(context, timer, contentResults) {
+var fillOutputQueues = function(context, contentResults) {
     // Put content notifications into output binding queue.
     context.bindings.O365ContentMsg = [];
     for (var i = 0; i < contentResults.length; i++)
@@ -65,7 +66,7 @@ var fillOutputQueues = function(context, timer, contentResults) {
         }
     }
     
-    var newCollectState = m_state.getCollectState(timer, contentResults);
+    var newCollectState = m_state.getCollectState(contentResults);
     context.bindings.O365ListState = [];
     context.bindings.O365ListState.push(JSON.stringify(newCollectState));
     
@@ -78,7 +79,7 @@ module.exports = function (context, AlertlogicO365ListTimer) {
             context.log.info('Singleton protection.');
             context.done();
         } else {
-            async.map(['Audit.General', 'Audit.AzureActiveDirectory'], 
+            async.map(JSON.parse(process.env.O365_CONTENT_STREAMS), 
                 function(stream, asyncCallback) {
                     var streamListState = m_state.getStreamListState(stream, currentState);
                     context.log.info('Listing content:', streamListState);
@@ -88,7 +89,8 @@ module.exports = function (context, AlertlogicO365ListTimer) {
                         } else {
                             var result = {
                                 streamName : stream,
-                                contentList : listResult
+                                contentList : listResult,
+                                listTs : moment.utc().format()
                             };
                             return asyncCallback(null, result);
                         }
@@ -99,7 +101,7 @@ module.exports = function (context, AlertlogicO365ListTimer) {
                     if (mapError) {
                         context.done(mapError);
                     } else {
-                        var resultContext = fillOutputQueues(context, AlertlogicO365ListTimer, mapResult);
+                        var resultContext = fillOutputQueues(context, mapResult);
                         m_state.commit(stateMsg, function(commitErr){
                             if (commitErr) {
                                 resultContext.log.error(`Recollection is likely to happen $currentState.`);
