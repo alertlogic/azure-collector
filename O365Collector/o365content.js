@@ -46,7 +46,7 @@ module.exports.processNotifications = function(context, notifications, callback)
 function processContent(context, notification, callback) {
     const expire = moment.utc(notification.contentExpiration);
     if (expire.isBefore(moment.utc())) {
-        context.log.warn('Expired content:', notification);
+        context.log.warn('Skipping expired content:', notification);
         return callback(null);
     } else {
         m_o365mgmnt.getContent(notification.contentUri, 

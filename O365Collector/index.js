@@ -13,8 +13,8 @@
 const m_o365content = require('./o365content');
 
 
-module.exports = function (context, contentNotification) {
-    return m_o365content.processNotifications(context, [contentNotification],
+module.exports = function (context, contentNotifications) {
+    return m_o365content.processNotifications(context, contentNotifications,
         function(err) {
             if (err) {
                 context.done(err);

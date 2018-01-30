@@ -23,6 +23,22 @@ var _getStateQueueName = function() {
     return 'alertlogic-o365-list';
 };
 
+var _getNewListState = function() {
+    const selectedStreams = process.env.O365_CONTENT_STREAMS;
+    var newState = [];
+    const newCollectedTs = moment.utc().format();
+    
+    for (var i=0; i < selectedStreams.length; ++i) {
+        var newStreamState = {
+            streamName : selectedStreams[i],
+            lastCollectedTs : newCollectedTs
+        };
+        newState.push(newStreamState);
+    }
+    
+    return newState;
+};
+
 var _initQueueService = function() {
     const storageParams = parse(process.env.AzureWebJobsStorage);
     QueueService = azureStorage.createQueueService(
@@ -39,12 +55,15 @@ var _getQueueService = function() {
 var _fetch = function(callback) {
     var queueService = _getQueueService();
     var options = {};
+    const queueName = _getStateQueueName();
     
     options.visibilityTimeout = 180;
     
-    queueService.getMessage(_getStateQueueName(), options,
+    queueService.getMessage(queueName, options,
         function(error, message) {
-            if (error || !message) {
+            if (error && error.code === 'QueueNotFound') {
+                return callback(null, _getNewListState());
+            } else if (!message) {
                 // Another instance of a function is running.
                 return callback(`Singleton protection $error`);
             } else {
@@ -57,9 +76,12 @@ var _fetch = function(callback) {
 
 var _commit = function(message, callback) {
     var queueService = _getQueueService();
-    
-    return queueService.deleteMessage(_getStateQueueName(),
+    if (message) {
+        return queueService.deleteMessage(_getStateQueueName(),
             message.messageId, message.popReceipt, callback);
+    } else {
+        return callback(null);
+    }
 };
 
 var _getCollectState = function(contentLists) {

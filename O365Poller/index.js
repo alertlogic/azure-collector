@@ -18,6 +18,10 @@ const m_state = require('./liststate');
 
 const PAGES_COUNT = 5;
 
+// One content notification is about 500 bytes.
+// Max Azure queue message size is 48K when using base64.
+const NOTIFICATION_BATCH_LENGTH = 3; 
+
 var processStream = function(stream, listState, callback) {
     m_o365mgmnt.subscriptionsContent(
         stream, listState.listStartTs, null,
@@ -56,16 +60,21 @@ var processListResponse = function(listError,
 var fillOutputQueues = function(context, contentResults) {
     // Put content notifications into output binding queue.
     context.bindings.O365ContentMsg = [];
-    for (var i = 0; i < contentResults.length; i++)
-    {
+    for (var i = 0; i < contentResults.length; i++) {
         var streamContent = contentResults[i];
-        context.log.info('Content length:', streamContent.streamName, streamContent.contentList.length);
-        for (var j = 0; j < streamContent.contentList.length; j++)
-        {
-            context.bindings.O365ContentMsg.push(streamContent.contentList[j]);
+        context.log.info('Content length:', 
+            streamContent.streamName, streamContent.contentList.length);
+        const batchesCount = 
+            Math.ceil(streamContent.contentList.length / NOTIFICATION_BATCH_LENGTH);
+        for (var j = 0; streamContent.contentList.length && j < batchesCount; ++j) {
+            var notificationBatch = JSON.stringify(streamContent.contentList.slice(
+                    j * NOTIFICATION_BATCH_LENGTH, 
+                    (j + 1) * NOTIFICATION_BATCH_LENGTH));
+            context.bindings.O365ContentMsg.push(notificationBatch);
         }
     }
     
+    // Put content list state into output binding queue.
     var newCollectState = m_state.getCollectState(contentResults);
     context.bindings.O365ListState = [];
     context.bindings.O365ListState.push(JSON.stringify(newCollectState));
