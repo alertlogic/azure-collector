@@ -148,7 +148,45 @@ npm package.json file.  To display the current version locally, issue `npm run l
 
 The `Updater` is a timer triggered function runs deployment sync operation every 12 hours in order to keep entire Web application up to date.
 
-## O365WebHook Function
+## O365Poller Function
+
+The function lists newly available content every 5 minutes using `subscription/content` API call. Once listed content notifications are pushed into `alertlogic-o365-content-notifications` Azure Storage Queue for further procesing by [O365Collector](#o365collector-function) function. 
+Notification example:
+```json
+[  
+   {  
+      "contentUri":"https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20180204192550121015189$20180204192550121015189$audit_azureactivedirectory$Audit_AzureActiveDirectory",
+      "contentId":"20180204192550121015189$20180204192550121015189$audit_azureactivedirectory$Audit_AzureActiveDirectory",
+      "contentType":"Audit.AzureActiveDirectory",
+      "contentCreated":"2018-02-04T19:25:50.121Z",
+      "contentExpiration":"2018-02-11T19:25:50.121Z"
+   },
+   {  
+      "contentUri":"https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20180204192753541018767$20180204192753541018767$audit_azureactivedirectory$Audit_AzureActiveDirectory",
+      "contentId":"20180204192753541018767$20180204192753541018767$audit_azureactivedirectory$Audit_AzureActiveDirectory",
+      "contentType":"Audit.AzureActiveDirectory",
+      "contentCreated":"2018-02-04T19:27:53.541Z",
+      "contentExpiration":"2018-02-11T19:27:53.541Z"
+   },
+   {  
+      "contentUri":"https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20180204192857555006558$20180204192857555006558$audit_azureactivedirectory$Audit_AzureActiveDirectory",
+      "contentId":"20180204192857555006558$20180204192857555006558$audit_azureactivedirectory$Audit_AzureActiveDirectory",
+      "contentType":"Audit.AzureActiveDirectory",
+      "contentCreated":"2018-02-04T19:28:57.555Z",
+      "contentExpiration":"2018-02-11T19:28:57.555Z"
+   }
+]
+```
+
+The function preserves singleton running mode, i.e. only once instance of a polling function is running at a time in order to avoid duplicate notifications being created. For that purpose the function persists its state in a separate `alertlogic-o365-list` Azure Storage Queue.
+
+## O365Collector Function
+
+This function is triggered by notifications received from `alertlogic-o365-content-notifications` Azure Storage Queue. The content is retreived from audit blobs and is wrapped into a protobuf structure [TBD link]() and is sent into Alert Logic Ingest service.
+
+## O365WebHook Function - Deprecated
+
+**Note:** the function is deprecated and disabled due to the [absnece](https://msdn.microsoft.com/en-us/office-365/troubleshooting-the-office-365-management-activity-api#frequently-asked-questions-about-the-office-365-management-api) of SLA on notification delivery. The function will be removed shortly.
 
 The `O365WebHook` function exposes an HTTP API endpoint `https://<app-name>/o365/webhook` which is registered as an [Office 365 webhook](https://msdn.microsoft.com/en-us/office-365/office-365-management-activity-api-reference#start-a-subscription) and processes O365 activity notifications. Below is a notification example,
 
@@ -188,6 +226,8 @@ A notification contains a link to the actual data which is retrieved by the `O36
 1. Run Master function locally: `npm run local-master`
 1. Run Updater function locally: `npm run local-updater`
 1. Run O365WebHook function locally: `npm run local-o365webhook`
+1. Run O365Poller function locally: `npm run local-o365poller`
+1. Run O365Collector function locally: `npm run local-o365collector`
 1. Run `npm test` in order to perform code analysis and unit tests.
 
 Please use the following [code style](https://github.com/airbnb/javascript) as much as possible.
@@ -206,6 +246,7 @@ You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
 # Known Issues/ Open Questions
 
 - Sometimes deployments fail after siteSync action. We need better updater to handle that in order not to wait for 12 hours for the next update attempt.
+- What is the max size of a content batch returned by querying `contentUri`? Possibly up to [1000 records](https://docs.microsoft.com/en-us/azure/active-directory/active-directory-reporting-api-audit-reference#api-endpoint)
 
 # Useful Links
 
