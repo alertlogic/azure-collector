@@ -1,7 +1,7 @@
 {
   "name": "al_util",
   "version": "0.0.1",
-  "description": "Utilities for alertlogic functions",
+  "description": "Utilities for Alert Logic functions",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

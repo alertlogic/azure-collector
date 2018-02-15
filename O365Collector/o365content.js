@@ -112,7 +112,6 @@ function parseContent(context, parsedContent, callback) {
             if (err) {
                 return callback(`Content parsing failure. ${err}`);
             } else {
-                context.log.verbose('parsedData: ', result);
                 return callback(null, result);
             }
         }

@@ -86,25 +86,32 @@ exports.checkin = function (context, AlertlogicMasterTimer, azcollectSvc, callba
 var _checkEnableAuditStreams = function(context, listedStreams, callback) {
     try {
         let o365AuditStreams = JSON.parse(process.env.O365_CONTENT_STREAMS);
-        // TODO: take webhook path from O365Webhook/function.json
         let webhookURL = 'https://' + process.env.WEBSITE_HOSTNAME +
             '/api/o365/webhook';
         async.map(o365AuditStreams,
             function(stream, asyncCallback) {
                 let currentStream = listedStreams.find(
                         obj => obj.contentType === stream);
+                
+                // TODO: remove the **if** statement below once all
+                // deprecated webhooks are removed.
                 if (currentStream && currentStream.status === 'enabled' &&
                     currentStream.webhook && 
-                    currentStream.webhook.status === 'enabled' &&
                     currentStream.webhook.address === webhookURL) {
+                    // Disable deprecated AL webhook
+                    return m_o365mgmnt.subscriptionsStart(stream, '',
+                        function(err, result, httpRequest, response) {
+                            if (err) {
+                                return asyncCallback(err);
+                            } else {
+                                return asyncCallback(null, stream);
+                            }
+                    });
+                } else if (currentStream && currentStream.status === 'enabled') {
                     context.log.verbose('Stream already enabled', stream);
                     return asyncCallback(null, stream);
                 } else {
-                    let webhook = { webhook : {
-                        address : webhookURL,
-                        expiration : ""
-                    }};
-                    return m_o365mgmnt.subscriptionsStart(stream, JSON.stringify(webhook),
+                    return m_o365mgmnt.subscriptionsStart(stream, '',
                         function(err, result, httpRequest, response) {
                             if (err) {
                                 return asyncCallback(err);

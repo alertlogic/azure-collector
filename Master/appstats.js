@@ -18,7 +18,7 @@ const azureStorage = require('azure-storage');
 const m_alUtil = require('../lib/al_util');
 
 const STATS_PERIOD_MINUTES = 15;
-const APP_FUNCTIONS = ['Master', 'O365WebHook', 'Updater'];
+const APP_FUNCTIONS = ['Master', 'O365Collector', 'O365Poller', 'Updater'];
 
 var TableQuery = azureStorage.TableQuery;
 var TableUtilities = azureStorage.TableUtilities;

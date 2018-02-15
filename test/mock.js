@@ -58,85 +58,22 @@ var allEnabledStreams = [
   {
     "contentType": "Audit.AzureActiveDirectory",
     "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
+    "webhook": null
   },
   {
     "contentType": "Audit.Exchange",
     "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
+    "webhook": null
   },
   {
     "contentType": "Audit.General",
     "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
+    "webhook": null
   },
   {
     "contentType": "Audit.SharePoint",
     "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
-  }
-];
-
-var twoOldEnabledStreams = [
-  {
-    "contentType": "Audit.AzureActiveDirectory",
-    "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://old-app.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
-  },
-  {
-    "contentType": "Audit.Exchange",
-    "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://old-app-o365.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
-  },
-  {
-    "contentType": "Audit.General",
-    "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
-  },
-  {
-    "contentType": "Audit.SharePoint",
-    "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
+    "webhook": null
   }
 ];
 
@@ -146,7 +83,46 @@ var timer = {
     next: '2017-08-03T13:45:00'
 };
 
-var o365webhookAuditLogs = {
+var o365pollerAuditLogs = {
+    entries : [
+      { PartitionKey: { '$': 'Edm.String', _: 'I' },
+        RowKey: { '$': 'Edm.String', _: '1bcef7c9-e0c3-4728-a704-b2b4c6e0f375' },
+        Timestamp: { '$': 'Edm.DateTime', _: '2017-12-22T10:05:30.666Z' },
+        ArgumentsJson: { _: '{"req":"Method: POST, Uri: https://test.azurewebsites.net/api/o365/webhook","_log":null,"_binder":null,"_context":"1bcef7c9-e0c3-4728-a704-b2b4c6e0f375","_logger":null,"$return":"response"}' },
+        EndTime: { '$': 'Edm.DateTime', _: '2017-12-22T10:04:47.760Z' },
+        FunctionInstanceHeartbeatExpiry: { '$': 'Edm.DateTime', _: '2017-12-22T10:07:45.676Z' },
+        FunctionName: { _: 'O365WebHook' },
+        LogOutput: { _: '' },
+        StartTime: { '$': 'Edm.DateTime', _: '2017-12-22T10:04:47.760Z' },
+        TriggerReason: { _: 'This function was programmatically called via the host APIs.' },
+        '.metadata': { etag: 'W/"datetime\'2017-12-22T10%3A05%3A30.6667953Z\'"' } },
+      { PartitionKey: { '$': 'Edm.String', _: 'I' },
+        RowKey: { '$': 'Edm.String', _: '1c43776f-cb79-4e80-8f62-7cc98a4798e5' },
+        Timestamp: { '$': 'Edm.DateTime', _: '2017-12-22T10:05:30.709Z' },
+        ArgumentsJson: { _: '{"req":"Method: POST, Uri: https://test.azurewebsites.net/api/o365/webhook","_log":null,"_binder":null,"_context":"1c43776f-cb79-4e80-8f62-7cc98a4798e5","_logger":null,"$return":"response"}' },
+        EndTime: { '$': 'Edm.DateTime', _: '2017-12-22T10:04:50.657Z' },
+        FunctionInstanceHeartbeatExpiry: { '$': 'Edm.DateTime', _: '2017-12-22T10:07:45.676Z' },
+        FunctionName: { _: 'O365WebHook' },
+        LogOutput: { _: '' },
+        StartTime: { '$': 'Edm.DateTime', _: '2017-12-22T10:04:50.657Z' },
+        TriggerReason: { _: 'This function was programmatically called via the host APIs.' },
+        '.metadata': { etag: 'W/"datetime\'2017-12-22T10%3A05%3A30.7098371Z\'"' } },
+      { PartitionKey: { '$': 'Edm.String', _: 'I' },
+        RowKey: { '$': 'Edm.String', _: '5d941e00-5413-45ea-932a-684e78fbfc6a' },
+        Timestamp: { '$': 'Edm.DateTime', _: '2017-12-21T10:39:43.713Z' },
+        ArgumentsJson: { _: '{"req":"Method: POST, Uri: https://test.azurewebsites.net/api/o365/webhook","_log":null,"_binder":null,"_context":"5d941e00-5413-45ea-932a-684e78fbfc6a","_logger":null,"$return":"response"}' },
+        EndTime: { '$': 'Edm.DateTime', _: '2017-12-21T10:39:00.011Z' },
+        ErrorDetails: { _: 'Unable to fetch content: O365 fetch content Error: Too many requests. Method=GetBlob, PublisherId=00000000-0000-0000-0000-000000000000' },
+        FunctionInstanceHeartbeatExpiry: { '$': 'Edm.DateTime', _: '2017-12-21T10:41:58.749Z' },
+        FunctionName: { _: 'O365WebHook' },
+        LogOutput: { _: 'Unable to fetch content: O365 fetch content Error: Too many requests. Method=GetBlob, PublisherId=00000000-0000-0000-0000-000000000000\r\nparsedData:  [ { message_ts: 1513739921,\n    record_type: \'15\',\n    message: \'{"CreationTime":"2017-12-20T03:18:41","Id":"d405d9d9-f3b7-4c4b-bc22-b39ea7e45d26","Operation":"UserLoggedIn","OrganizationId":"bf8d32d3-1c13-4487-af02-80dba2236485","RecordType":15,"ResultStatus":"Succeeded","UserKey":"1003BFFD991C0527@alazurealertlogic.onmicrosoft.com","UserType":0,"Version":1,"Workload":"AzureActiveDirectory","ClientIP":"204.110.219.5","ObjectId":"797f4846-ba00-4fd7-ba43-dac1f8f63013","UserId":"azure_se_logcollection@alazurealertlogic.onmicrosoft.com","AzureActiveDirectoryEventType":1,"ExtendedProperties":[{"Name":"UserAuthenticationMethod","Value":"1"},{"Name":"RequestType","Value":"OAuth2:Token"},{"Name":"ResultStatusDetail","Value":"Success"}],"Actor":[{"ID":"62c77c61-11d0-47cc-9e86-a2f33c69037a","Type":0},{"ID":"azure_se_logcollection@alazurealertlogic.onmicrosoft.com","Type":5},{"ID":"1003BFFD991C0527","Type":3}],"ActorContextId":"bf8d32d3-1c13-4487-af02-80dba2236485","ActorIpAddress":"204.110.219.5","InterSystemsId":"68381b98-e142-43ae-8cf4-8c8d636a3def","IntraSystemId":"e8546ad8-ed8c-4b59-89a6-197afc2f0100","Target":[{"ID":"797f4846-ba00-4fd7-ba43-dac1f8f63013","Type":0}],"TargetContextId":"bf8d32d3-1c13-4487-af02-80dba2236485","ApplicationId":"04b07795-8ddb-461a-bbee-02f9e1bf7b46"}\' } ]\r\nparsedData:  [ { message_ts: 1513666223,\n    record_type: \'15\',\n    message: \'{"CreationTime":"2017-12-19T06:50:23","Id":"72253d17-6292-4c2e-8eb7-85506e78d4f7","Operation":"UserLoginFailed","OrganizationId":"bf8d32d3-1c13-4487-af02-80dba2236485","RecordType":15,"ResultStatus":"Failed","UserKey":"Not Available","UserType":0,"Version":1,"Workload":"AzureActiveDirectory","ClientIP":"204.110.219.5","ObjectId":"797f4846-ba00-4fd7-ba43-dac1f8f63013","UserId":"testuser@alazurealertlogic.onmicrosoft.com","AzureActiveDirectoryEventType":1,"ExtendedProper…' },
+        StartTime: { '$': 'Edm.DateTime', _: '2017-12-21T10:38:59.386Z' },
+        TriggerReason: { _: 'This function was programmatically called via the host APIs.' },
+        '.metadata': { etag: 'W/"datetime\'2017-12-21T10%3A39%3A43.7137248Z\'"' } }
+    ]
+};
+
+var o365collectorAuditLogs = {
     entries : [
       { PartitionKey: { '$': 'Edm.String', _: 'I' },
         RowKey: { '$': 'Edm.String', _: '1bcef7c9-e0c3-4728-a704-b2b4c6e0f375' },
@@ -412,7 +388,6 @@ module.exports = {
     timer : timer,
     masterAuditLogs : masterAuditLogs,
     updaterAuditLogs : updaterAuditLogs,
-    o365webhookAuditLogs : o365webhookAuditLogs,
-    webhookNotifications : webhookNotifications,
-    o365Content : o365Content
+    o365collectorAuditLogs : o365collectorAuditLogs,
+    o365pollerAuditLogs : o365pollerAuditLogs
 };

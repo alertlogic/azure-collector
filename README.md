@@ -182,11 +182,11 @@ The function preserves singleton running mode, i.e. only once instance of a poll
 
 ## O365Collector Function
 
-This function is triggered by notifications received from `alertlogic-o365-content-notifications` Azure Storage Queue. The content is retreived from audit blobs and is wrapped into a protobuf structure [TBD link]() and is sent into Alert Logic Ingest service.
+This function is triggered by notifications received from `alertlogic-o365-content-notifications` Azure Storage Queue. The content is retreived from audit blobs and is wrapped into a [protobuf structure](https://github.com/alertlogic/azure-collector/O365Collector/proto/common_proto.piqi.proto) and is sent into Alert Logic Ingest service.
 
 ## O365WebHook Function - Deprecated
 
-**Note:** the function is deprecated and disabled due to the [absnece](https://msdn.microsoft.com/en-us/office-365/troubleshooting-the-office-365-management-activity-api#frequently-asked-questions-about-the-office-365-management-api) of SLA on notification delivery. The function will be removed shortly.
+**Note:** the function is deprecated and disabled due to the [absence](https://msdn.microsoft.com/en-us/office-365/troubleshooting-the-office-365-management-activity-api#frequently-asked-questions-about-the-office-365-management-api) of SLA for O365 API activity notification delivery. The function will be removed shortly.
 
 The `O365WebHook` function exposes an HTTP API endpoint `https://<app-name>/o365/webhook` which is registered as an [Office 365 webhook](https://msdn.microsoft.com/en-us/office-365/office-365-management-activity-api-reference#start-a-subscription) and processes O365 activity notifications. Below is a notification example,
 
@@ -225,7 +225,6 @@ A notification contains a link to the actual data which is retrieved by the `O36
 1. Edit `./local_dev/dev_config.js`
 1. Run Master function locally: `npm run local-master`
 1. Run Updater function locally: `npm run local-updater`
-1. Run O365WebHook function locally: `npm run local-o365webhook`
 1. Run O365Poller function locally: `npm run local-o365poller`
 1. Run O365Collector function locally: `npm run local-o365collector`
 1. Run `npm test` in order to perform code analysis and unit tests.
