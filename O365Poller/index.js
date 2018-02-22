@@ -16,6 +16,7 @@ const moment = require('moment');
 const m_o365mgmnt = require('../lib/o365_mgmnt');
 const m_state = require('./liststate');
 
+// The number of content pages listed per one invocation.
 const PAGES_COUNT = 5;
 
 // One content notification is about 500 bytes.
@@ -60,7 +61,7 @@ var processListResponse = function(listError,
 var fillOutputQueues = function(context, contentResults) {
     // Put content notifications into output binding queue.
     context.bindings.O365ContentMsg = [];
-    for (var i = 0; i < contentResults.length; i++) {
+    for (var i = 0; i < contentResults.length; ++i) {
         var streamContent = contentResults[i];
         context.log.info('Content length:', 
             streamContent.streamName, streamContent.contentList.length);

@@ -63,6 +63,8 @@ var _fetch = function(callback) {
         function(error, message) {
             if (error && error.code === 'QueueNotFound') {
                 return callback(null, _getNewListState());
+            } else if (error) {
+                return callback(`Get state $error`);
             } else if (!message) {
                 // Another instance of a function is running.
                 return callback(`Singleton protection $error`);
