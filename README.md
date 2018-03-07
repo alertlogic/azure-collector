@@ -23,7 +23,6 @@ Installation requires the following steps:
 In order to install O365 Log collector:
 
 1. Log into [O365 portal](https://portal.office.com) as AD tenant administrator.
-1. Go to `Setup` and `Domain` and make a note of O365 domain name to collect logs from, for example, `example.onmicrosoft.com`.
 1. Navigate to `Admin Centers` and `Azure AD`.
 1. On the left side panel click `Azure Active Directory` and `App Registrations`.
 1. Click `+New application registration`, fill in configuration parameters and click `Create`:
@@ -45,7 +44,7 @@ In order to install O365 Log collector:
 click on the link under `Managed application in local directory`.  Then click `Properties`.  The `Service Principal Id`
 is labeled `Object ID` on the properties page.  **Caution** This is not the same `Object ID` listed in the `Properties` blade reached 
 by clicking `Settings` or `All Settings` from the `Registered app`.  It is also not the `Object ID` shown on the `Registered app`
-blade itself.   
+blade itself.
 
 ## Create an Alert Logic Access Key
 
@@ -82,7 +81,9 @@ curl -X DELETE -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.glo
 
 ## Function deployment
 
-Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an active Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
+Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an active Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade).
+
+If multiple Active Direcotry tenants are used within your organisation please login into the same tenant where application registration was created during [Register a New O365 Web Application in O365](#register-a-new-o365-web-application-in-o365). How to find Office365 tenant id see [here](https://support.office.com/en-gb/article/find-your-office-365-tenant-id-6891b561-a52d-4ade-9f39-b492285e2c9b).
 
 ### Deploy via the Custom ARM Template in an Azure Subscription
 
@@ -99,7 +100,6 @@ Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform
    - `Alert Logic Data Residency` - usually `default`
    - `Office365 Content Streams` - The list of streams you would like to collect.  Valid values are:
         - ["Audit.AzureActiveDirectory","Audit.Exchange","Audit.SharePoint","Audit.General", "DLP.All"]
-   - `Office365 Tenant ID` - The GUID of the tenant e.g. `alazurealertlogic.onmicrosoft.com`
    - `Service Principal ID` - The `Object ID` of the application that created the subscription.
    You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_ -> Link under 
 _Managed application in local directory_ -> _Properties_ -> _Object ID_
@@ -135,6 +135,8 @@ Wait until it is deployed successfully.
 1. Log into Alertlogic CloudDefender and navigate into `Log Manager -> Sources` page. Check new O365 log source (with a name provided during `az group deployment create` above) has been created and source status is `ok`.
 
 # How It Works
+
+**Note:** the following Azure functions use Application/O365 tenant id (`APP_TENANT_ID` web application setting) as a `PublisherIdentifier` during O365 management API requests. More info about `PublisherIdentifier` can be found [here](https://msdn.microsoft.com/en-us/office-365/troubleshooting-the-office-365-management-activity-api#requesting-content-blobs-and-throttling). 
 
 ## Master Function
 

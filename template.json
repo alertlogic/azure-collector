@@ -32,9 +32,6 @@
             "type": "Array",
             "defaultValue": ["Audit.AzureActiveDirectory", "Audit.Exchange", "Audit.SharePoint", "Audit.General"]
         },
-        "Office365 Tenant ID": {
-            "type": "String"
-        },
         "Service Principal ID": {
             "type": "String"
         },
@@ -104,10 +101,6 @@
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
                             "value": "6.5.0"
-                        },
-                        {
-                            "name": "O365_TENANT_ID",
-                            "value": "[parameters('Office365 Tenant ID')]"
                         },
                         {
                             "name": "O365_CONTENT_STREAMS",
