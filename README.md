@@ -87,11 +87,9 @@ If multiple Active Direcotry tenants are used within your organisation please lo
 
 ### Deploy via the Custom ARM Template in an Azure Subscription
 
-1. Download an ARM [template](https://github.com/alertlogic/azure-collector/raw/master/template.json)
-1. Go to [Customer Deployment](https://portal.azure.com/#create/Microsoft.Template) page. Type in `deploy` in a search query located on top of Azure Web UI and select `Deploy a custom template`.
-1. Click `Build your own template in the editor` and load the file previously downloaded on step 1 above.
-1. Click `Save` button.
-2. Fill in required template parameters and click the `Purchase` button to start a deployment. I.e.:
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Falertlogic%2Fazure-collector%2Fmaster%2Ftemplate.json)
+
+Fill in required template parameters and click the `Purchase` button to start a deployment:
    - `Name` - Any name
    - `Storage Name` - Any Storage Account name (that does not currently exist)
    - `Alert Logic Access Key ID` - `access_key_id` returned from AIMs [above](#create_an_alert_logic_access_key)
