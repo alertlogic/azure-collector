@@ -23,7 +23,6 @@ Installation requires the following steps:
 In order to install O365 Log collector:
 
 1. Log into [O365 portal](https://portal.office.com) as AD tenant administrator.
-1. Go to `Setup` and `Domain` and make a note of O365 domain name to collect logs from, for example, `example.onmicrosoft.com`.
 1. Navigate to `Admin Centers` and `Azure AD`.
 1. On the left side panel click `Azure Active Directory` and `App Registrations`.
 1. Click `+New application registration`, fill in configuration parameters and click `Create`:
@@ -45,15 +44,14 @@ In order to install O365 Log collector:
 click on the link under `Managed application in local directory`.  Then click `Properties`.  The `Service Principal Id`
 is labeled `Object ID` on the properties page.  **Caution** This is not the same `Object ID` listed in the `Properties` blade reached 
 by clicking `Settings` or `All Settings` from the `Registered app`.  It is also not the `Object ID` shown on the `Registered app`
-blade itself.   
+blade itself.
 
 ## Create an Alert Logic Access Key
 
 From the Bash command line in [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart) run the following commands, where `<username>` is your Alert Logic user and `<password>` is your Alert Logic password:
 ```
 export AL_USERNAME='<username>'
-export AL_PASSWORD='<password>'
-auth=$(curl -X POST -s -u $AL_USERNAME:$AL_PASSWORD https://api.global-services.global.alertlogic.com/aims/v1/authenticate); export AL_ACCOUNT_ID=$(echo $auth | jq -r '.authentication.account.id'); export AL_USER_ID=$(echo $auth | jq -r '.authentication.user.id'); export AL_TOKEN=$(echo $auth | jq -r '.authentication.token'); if [ -z $AL_TOKEN ]; then echo "Authentication failure"; else roles=$(curl -s -X GET -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/roles | jq -r '.roles[].name'); if [ "$roles" != "Administrator" ]; then echo "The $AL_USERNAME doesn’t have Administrator role. Assigned role is '$roles'"; else curl -s -X POST -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/access_keys | jq .; fi; fi; unset AL_USERNAME; unset AL_PASSWORD;
+auth=$(curl -X POST -s -u $AL_USERNAME https://api.global-services.global.alertlogic.com/aims/v1/authenticate); export AL_ACCOUNT_ID=$(echo $auth | jq -r '.authentication.account.id'); export AL_USER_ID=$(echo $auth | jq -r '.authentication.user.id'); export AL_TOKEN=$(echo $auth | jq -r '.authentication.token'); if [ -z $AL_TOKEN ]; then echo "Authentication failure"; else roles=$(curl -s -X GET -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/roles | jq -r '.roles[].name'); if [ "$roles" != "Administrator" ]; then echo "The $AL_USERNAME doesn’t have Administrator role. Assigned role is '$roles'"; else curl -s -X POST -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.global.alertlogic.com/aims/v1/$AL_ACCOUNT_ID/users/$AL_USER_ID/access_keys | jq .; fi; fi; unset AL_USERNAME;
 ```
 An example of a successful response is:
 
@@ -83,15 +81,15 @@ curl -X DELETE -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.glo
 
 ## Function deployment
 
-Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an active Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade)
+Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an active Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade).
+
+If multiple Active Direcotry tenants are used within your organisation please login into the same tenant where application registration was created during [Register a New O365 Web Application in O365](#register-a-new-o365-web-application-in-o365). How to find Office365 tenant id see [here](https://support.office.com/en-gb/article/find-your-office-365-tenant-id-6891b561-a52d-4ade-9f39-b492285e2c9b).
 
 ### Deploy via the Custom ARM Template in an Azure Subscription
 
-1. Download an ARM [template](https://github.com/alertlogic/azure-collector/raw/master/template.json)
-1. Go to [Customer Deployment](https://portal.azure.com/#create/Microsoft.Template) page. Type in `deploy` in a search query located on top of Azure Web UI and select `Deploy a custom template`.
-1. Click `Build your own template in the editor` and load the file previously downloaded on step 1 above.
-1. Click `Save` button.
-2. Fill in required template parameters and click the `Purchase` button to start a deployment. I.e.:
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Falertlogic%2Fazure-collector%2Fmaster%2Ftemplate.json)
+
+Fill in required template parameters and click the `Purchase` button to start a deployment:
    - `Name` - Any name
    - `Storage Name` - Any Storage Account name (that does not currently exist)
    - `Alert Logic Access Key ID` - `access_key_id` returned from AIMs [above](#create_an_alert_logic_access_key)
@@ -100,7 +98,6 @@ Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform
    - `Alert Logic Data Residency` - usually `default`
    - `Office365 Content Streams` - The list of streams you would like to collect.  Valid values are:
         - ["Audit.AzureActiveDirectory","Audit.Exchange","Audit.SharePoint","Audit.General", "DLP.All"]
-   - `Office365 Tenant ID` - The GUID of the tenant e.g. `alazurealertlogic.onmicrosoft.com`
    - `Service Principal ID` - The `Object ID` of the application that created the subscription.
    You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_ -> Link under 
 _Managed application in local directory_ -> _Properties_ -> _Object ID_
@@ -136,6 +133,8 @@ Wait until it is deployed successfully.
 1. Log into Alertlogic CloudDefender and navigate into `Log Manager -> Sources` page. Check new O365 log source (with a name provided during `az group deployment create` above) has been created and source status is `ok`.
 
 # How It Works
+
+**Note:** the following Azure functions use Application/O365 tenant id (`APP_TENANT_ID` web application setting) as a `PublisherIdentifier` during O365 management API requests. More info about `PublisherIdentifier` can be found [here](https://msdn.microsoft.com/en-us/office-365/troubleshooting-the-office-365-management-activity-api#requesting-content-blobs-and-throttling). 
 
 ## Master Function
 

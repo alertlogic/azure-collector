@@ -1,9 +1,11 @@
 {
   "name": "azure_collector",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "dependencies": {
     "async": "*",
     "azure": "^2.0.0-preview",
+    "moment": "^2.20.1",
+    "parse-key-value": "^1.0.0",
     "path": "^0.12.7",
     "protobufjs": "*",
     "request-promise-native": "^1.0.4"
