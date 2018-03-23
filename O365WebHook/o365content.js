@@ -26,43 +26,28 @@ const g_ingestc = new m_ingest.Ingest(
 );
 
 module.exports.processNotifications = function(context, notifications, callback) {
-    // Call the function per each notification in parallel.
-    async.each(notifications,
-        function(notification, callback) {
-            processContent(context, notification, callback);
-        },
-        function(err) {
-            if (err) {
-                return callback(`${err}`);
-            }
-            else {
-                return callback(null);
-            }
+    async.map(notifications, function(notification, asyncCallback) {
+        return m_o365mgmnt.getContent(notification.contentUri, asyncCallback);
+    }, function(fetchErr, mapResult) {
+        if (fetchErr) {
+            return callback(fetchErr);
+        } else {
+            var flattenResult = [].concat.apply([], mapResult);
+            return processContent(context, flattenResult, callback);
         }
-    );
+    });
 };
 
-function processContent(context, notification, callback) {
-    m_o365mgmnt.getContent(notification.contentUri, 
-        function(err, content) {
+function processContent(context, content, callback) {
+    parseContent(context, content,
+        function(err, parsedContent) {
             if (err) {
-                return callback(`Unable to fetch content: ${err}`);
+                return callback(err);
             }
             else {
-                parseContent(context, content,
-                    function(err, parsedContent) {
-                        if (err) {
-                            return callback(err);
-                        }
-                        else {
-                            return sendToIngest(context,
-                                parsedContent, callback);
-                        }
-                    }
-                );
+                return sendToIngest(context, parsedContent, callback);
             }
-        }
-    );
+    });
 }
 
 // Parse each message into:
@@ -105,7 +90,7 @@ function parseContent(context, parsedContent, callback) {
             if (err) {
                 return callback(`Content parsing failure. ${err}`);
             } else {
-                context.log.verbose('parsedData: ', result.length);
+                context.log.verbose('Messages fetched:', result.length);
                 return callback(null, result);
             }
         }
@@ -155,15 +140,15 @@ function sendToIngest(context, content, callback) {
                     if (compressed.byteLength > 700000)
                         context.log.warn(`Compressed log batch length`,
                             `(${compressed.byteLength}) exceeds maximum allowed value.`);
+                    context.log.verbose('Bytes sent to Ingest: ', compressed.byteLength);
                     return g_ingestc.sendO365Data(compressed)
                         .then(resp => {
                             return callback(null, resp);
                         })
                         .catch(function(exception){
-                            return callback(`Unable to send to Ingest ${exception}`);
+                            return callback(`Unable to send to Ingest. ${exception}`);
                         });
                 }
             });
         });
 }
-
