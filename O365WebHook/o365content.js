@@ -26,7 +26,7 @@ const g_ingestc = new m_ingest.Ingest(
 );
 
 // One O365 content message is about 1KB.
-var MAX_BATCH_MESSAGES = 1200;
+var MAX_BATCH_MESSAGES = 1500;
 
 module.exports.processNotifications = function(context, notifications, callback) {
     async.map(notifications, function(notification, asyncCallback) {
