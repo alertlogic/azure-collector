@@ -25,44 +25,51 @@ const g_ingestc = new m_ingest.Ingest(
         }
 );
 
+// One O365 content message is about 1KB.
+var MAX_BATCH_MESSAGES = 1500;
+
 module.exports.processNotifications = function(context, notifications, callback) {
-    // Call the function per each notification in parallel.
-    async.each(notifications,
-        function(notification, callback) {
-            processContent(context, notification, callback);
-        },
-        function(err) {
-            if (err) {
-                return callback(`${err}`);
-            }
-            else {
-                return callback(null);
-            }
+    async.map(notifications, function(notification, asyncCallback) {
+        return m_o365mgmnt.getContent(notification.contentUri, asyncCallback);
+    }, function(fetchErr, mapResult) {
+        if (fetchErr) {
+            return callback(fetchErr);
+        } else {
+            const flattenResult = [].concat.apply([], mapResult);
+            context.log.verbose('Messages fetched:', flattenResult.length);
+            return processContent(context, flattenResult, callback);
         }
-    );
+    });
 };
 
-function processContent(context, notification, callback) {
-    m_o365mgmnt.getContent(notification.contentUri, 
-        function(err, content) {
-            if (err) {
-                return callback(`Unable to fetch content: ${err}`);
-            }
-            else {
-                parseContent(context, content,
-                    function(err, parsedContent) {
-                        if (err) {
-                            return callback(err);
-                        }
-                        else {
-                            return sendToIngest(context,
-                                parsedContent, callback);
-                        }
-                    }
-                );
-            }
-        }
-    );
+function processContent(context, content, callback) {
+    const slices = getSliceIndexes(content.length);
+    return async.map(slices, function(slice, asyncCallback){
+        const contentSlice = content.slice(slice.start, slice.end);
+        parseContent(context, contentSlice,
+            function(err, parsedContent) {
+                if (err) {
+                    return asyncCallback(err);
+                }
+                else {
+                    return sendToIngest(context, parsedContent, asyncCallback);
+                }
+        });
+    }, callback);
+}
+
+function getSliceIndexes(contentLength) {
+    var sliceArray = [];
+    const batchesCount = Math.ceil(contentLength / MAX_BATCH_MESSAGES);
+    for (var i=0; i<batchesCount; ++i) {
+        const slice = {
+            start : i * MAX_BATCH_MESSAGES,
+            end : (i+1) * MAX_BATCH_MESSAGES
+        };
+        sliceArray.push(slice);
+    }
+    
+    return sliceArray;
 }
 
 // Parse each message into:
@@ -105,7 +112,6 @@ function parseContent(context, parsedContent, callback) {
             if (err) {
                 return callback(`Content parsing failure. ${err}`);
             } else {
-                context.log.verbose('parsedData: ', result.length);
                 return callback(null, result);
             }
         }
@@ -114,34 +120,34 @@ function parseContent(context, parsedContent, callback) {
 
 function sendToIngest(context, content, callback) {
     async.waterfall([
-        function(callback) {
+        function(asyncCallback) {
             m_ingestProto.load(context, function(err, root) {
-                callback(err, root);
+                asyncCallback(err, root);
             });
         },
-        function(root, callback) {
+        function(root, asyncCallback) {
             m_ingestProto.setMessage(context, root, content, function(err, msg) {
-                callback(err, root, msg);
+                asyncCallback(err, root, msg);
             });
         },
-        function(root, msg, callback) {
+        function(root, msg, asyncCallback) {
             m_ingestProto.setHostMetadata(context, root, content, function(err, meta) {
-                callback(err, root, meta, msg);
+                asyncCallback(err, root, meta, msg);
             });
         },
-        function(root, meta, msg, callback) {
+        function(root, meta, msg, asyncCallback) {
             m_ingestProto.setBatch(context, root, meta, msg, function(err, batch) {
-                callback(err, root, batch);
+                asyncCallback(err, root, batch);
             });
         },
-        function(root, batchBuf, callback) {
+        function(root, batchBuf, asyncCallback) {
             m_ingestProto.setBatchList(context, root, batchBuf,
                 function(err, batchList) {
-                    callback(err, root, batchList);
+                    asyncCallback(err, root, batchList);
                 });
         },
-        function(root, batchList, callback) {
-            m_ingestProto.encode(context, root, batchList, callback);
+        function(root, batchList, asyncCallback) {
+            m_ingestProto.encode(context, root, batchList, asyncCallback);
         }],
         function(err, result) {
             if (err) {
@@ -157,13 +163,13 @@ function sendToIngest(context, content, callback) {
                             `(${compressed.byteLength}) exceeds maximum allowed value.`);
                     return g_ingestc.sendO365Data(compressed)
                         .then(resp => {
+                            context.log.verbose('Bytes sent to Ingest: ', compressed.byteLength);
                             return callback(null, resp);
                         })
                         .catch(function(exception){
-                            return callback(`Unable to send to Ingest ${exception}`);
+                            return callback(`Unable to send to Ingest. ${exception}`);
                         });
                 }
             });
         });
 }
-
