@@ -35,6 +35,7 @@ class Azcollect extends m_alServiceC.AlServiceC {
             version : '1.0.0',
             web_app_name : process.env.WEBSITE_SITE_NAME,
             app_tenant_id : process.env.APP_TENANT_ID,
+            app_resource_group : process.env.APP_RESOURCE_GROUP,
             subscription_id : process.env.APP_SUBSCRIPTION_ID,
             client_id : process.env.CUSTOMCONNSTR_APP_CLIENT_ID,
             client_secret : process.env.CUSTOMCONNSTR_APP_CLIENT_SECRET
@@ -42,7 +43,7 @@ class Azcollect extends m_alServiceC.AlServiceC {
         let configParams = {
             config : {
                 type : 'o365',
-                office_tenant_id : process.env.O365_TENANT_ID,
+                office_tenant_id : process.env.APP_TENANT_ID,
                 content_streams: o365AuditStreams
         }};
         return Object.assign({}, commonParams , configParams);

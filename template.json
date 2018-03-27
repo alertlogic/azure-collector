@@ -40,14 +40,6 @@
         },
         "App Client Secret": {
             "type": "SecureString"
-        },
-        "Repository URL": {
-            "type": "String",
-            "defaultValue": "https://github.com/alertlogic/azure-collector.git"
-        },
-        "Repository Branch": {
-            "type": "String",
-            "defaultValue": "master"
         }
     },
     "variables": {
@@ -57,7 +49,9 @@
         "roleAssignmentId": "[guid(uniqueString( resourceGroup().id, deployment().name ))]",
         "subscriptionId": "[split(subscription().id, '/')[2]]",
         "tenantId": "[subscription().tenantId]",
-        "contributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
+        "contributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+        "repo": "https://github.com/alertlogic/azure-collector.git",
+        "branch": "master"
     },
     "resources": [
         {
@@ -165,8 +159,8 @@
                     "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
                 ],
                 "properties": {
-                    "RepoUrl": "[parameters('Repository URL')]",
-                    "branch": "[parameters('Repository Branch')]",
+                    "RepoUrl": "[variables('repo')]",
+                    "branch": "[variables('branch')]",
                     "IsManualIntegration": true
                 }
             }]
