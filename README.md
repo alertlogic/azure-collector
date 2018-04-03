@@ -83,7 +83,7 @@ curl -X DELETE -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.glo
 
 Log into [Azure portal](https://portal.azure.com). **Note**, In order to perform steps below you should have an active Azure subscription, to find out visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade).
 
-If multiple Active Direcotry tenants are used within your organisation please login into the same tenant where application registration was created during [Register a New O365 Web Application in O365](#register-a-new-o365-web-application-in-o365). How to find Office365 tenant id see [here](https://support.office.com/en-gb/article/find-your-office-365-tenant-id-6891b561-a52d-4ade-9f39-b492285e2c9b).
+If multiple Active Directory tenants are used within your organization please login into the same tenant where application registration was created during [Register a New O365 Web Application in O365](#register-a-new-o365-web-application-in-o365). How to find Office365 tenant id see [here](https://support.office.com/en-gb/article/find-your-office-365-tenant-id-6891b561-a52d-4ade-9f39-b492285e2c9b).
 
 ### Deploy via the Custom ARM Template in an Azure Subscription
 
@@ -104,8 +104,6 @@ _Managed application in local directory_ -> _Properties_ -> _Object ID_
    - `App Client ID` - The GUID of your application that created the subscription.
                      You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
    - `App Client Secret` - The secret key of your application from _App Registrations_
-   - `Repository URL` - must be `https://github.com/alertlogic/azure-collector.git`
-   - `Repository Branch` - should usually be `master`
 
 ### Deploy via Azure CLI
 
@@ -139,7 +137,7 @@ Wait until it is deployed successfully.
 ## Master Function
 
 The `Master` function is a timer trigger function which is responsible for:
-- registering the Azure web app In Alertlogic backend;
+- registering the Azure web app in Alertlogic backend;
 - reporting health-checks to the backed;
 - performing log source configuration updates, which happen via Alertlogic UI.
 
@@ -150,9 +148,9 @@ npm package.json file.  To display the current version locally, issue `npm run l
 
 The `Updater` is a timer triggered function runs deployment sync operation every 12 hours in order to keep entire Web application up to date.
 
-## Collector Function
+## O365WebHook Function
 
-The `Collector` function exposes an HTTP API endpoint `https://<app-name>/o365/webhook` which is registered as an [Office 365 webhook](https://msdn.microsoft.com/en-us/office-365/office-365-management-activity-api-reference#start-a-subscription) and processes O365 activity notifications. Below is a notification example,
+The `O365WebHook` function exposes an HTTP API endpoint `https://<app-name>/o365/webhook` which is registered as an [Office 365 webhook](https://msdn.microsoft.com/en-us/office-365/office-365-management-activity-api-reference#start-a-subscription) and processes O365 activity notifications. Below is a notification example,
 
 ```
 [
@@ -177,7 +175,9 @@ The `Collector` function exposes an HTTP API endpoint `https://<app-name>/o365/w
 ]
 ```
 
-A notification contains a link to the actual data which is retrieved by the `Collector`, wrapped into a protobuf structure [TBD link]() and is sent into Alertlogic Ingest service.
+A notification contains a link to the actual data which is retrieved by the `O365WebHook`, wrapped into a protobuf [structure](proto/common_proto.piqi.proto) and is sent into Alertlogic Ingest service.
+
+**Note:** it can take up to 24 hours before audit content is available. Please follow [this link](https://support.office.com/en-us/article/Search-the-audit-log-in-the-Office-365-Security-Compliance-Center-0d4d0f35-390b-4518-800e-0c7ec95e946c?ui=en-US&rs=en-US&ad=US#PickTab=BYB) to find the time it takes for the different services in Office 365.
 
 # Local Development
 
@@ -195,6 +195,7 @@ Please use the following [code style](https://github.com/airbnb/javascript) as m
 ## Setting environment in dev_config.js
 
 - `process.env.APP_TENANT_ID` - The GUID of the tenant i.e. 'alazurealertlogic.onmicrosoft.com'
+- `process.evn.APP_RESOURCE_GROUP` - The name of the resource group where your application is deployed.
 - `process.env.CUSTOMCONNSTR_APP_CLIENT_ID` - The GUID of your application that created the subscription.
 You can obtain it from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_
 - `process.env.CUSTOMCONNSTR_APP_CLIENT_SECRET` - A secret key of your application from _App Registrations_.

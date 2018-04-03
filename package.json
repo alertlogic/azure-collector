@@ -1,6 +1,6 @@
 {
   "name": "azure_collector",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "dependencies": {
     "async": "*",
     "azure": "^2.0.0-preview",
@@ -18,11 +18,13 @@
     "local-ad": "node ./local_dev/ad_token_local_dev.js",
     "local-version": "node ./local_dev/version_local_dev.js",
     "lint": "jshint --exclude \"./node_modules/*\" **/*.js",
-    "test": "npm run lint && mocha"
+    "test": "JUNIT_REPORT_PATH=./test/report.xml nyc --reporter=cobertura mocha --colors --reporter mocha-jenkins-reporter"
   },
   "devDependencies": {
     "jshint": "^2.9.5",
     "mocha": "^3.5.3",
+    "mocha-jenkins-reporter": "^0.3.10",
+    "nyc": "^11.3.0",
     "pre-commit": "^1.2.2",
     "rewire": "^2.5.2",
     "sinon": "^3.3.0"
