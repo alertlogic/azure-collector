@@ -388,6 +388,8 @@ module.exports = {
     timer : timer,
     masterAuditLogs : masterAuditLogs,
     updaterAuditLogs : updaterAuditLogs,
+    webhookNotifications : webhookNotifications,
+    o365Content : o365Content,
     o365collectorAuditLogs : o365collectorAuditLogs,
     o365pollerAuditLogs : o365pollerAuditLogs
 };
