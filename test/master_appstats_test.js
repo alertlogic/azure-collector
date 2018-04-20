@@ -43,7 +43,8 @@ describe('Master Function appstats.js Units', function() {
             );
             var expectedStats = [ 
                 { Master: { invocations: 0, errors: 0 } },
-                { O365WebHook: { invocations: 0, errors: 0 } },
+                { O365Collector: { invocations: 0, errors: 0 } },
+                { O365Poller: { invocations: 0, errors: 0 } },
                 { Updater: { invocations: 0, errors: 0 } }
             ];
             
@@ -61,8 +62,10 @@ describe('Master Function appstats.js Units', function() {
                         queryEntities : function(table, query, token, callback) {
                             if (query == 'Master')
                                 return callback(null, testMock.masterAuditLogs);
-                            if (query == 'O365WebHook')
-                                return callback(null, testMock.o365webhookAuditLogs);
+                            if (query == 'O365Collector')
+                                return callback(null, testMock.o365collectorAuditLogs);
+                            if (query == 'O365Poller')
+                                return callback(null, testMock.o365pollerAuditLogs);
                             if (query == 'Updater')
                                 return callback(null, testMock.updaterAuditLogs);
                             return callback(null, {entries : []});                                
@@ -80,7 +83,8 @@ describe('Master Function appstats.js Units', function() {
             );
             var expectedStats = [ 
                 { Master: { invocations: 3, errors: 2 } },
-                { O365WebHook: { invocations: 3, errors: 1 } },
+                { O365Collector: { invocations: 3, errors: 1 } },
+                { O365Poller: { invocations: 3, errors: 1 } },
                 { Updater: { invocations: 2, errors: 1 } }
             ];
             
@@ -104,7 +108,8 @@ describe('Master Function appstats.js Units', function() {
             );
             var expectedErrorStats = [
                 {"Master":{"error":"Error getting stats Error: getaddrinfo ENOTFOUND test.table.core.windows.net test.table.core.windows.net:443"}},
-                {"O365WebHook":{"error":"Error getting stats Error: getaddrinfo ENOTFOUND test.table.core.windows.net test.table.core.windows.net:443"}},
+                {"O365Collector":{"error":"Error getting stats Error: getaddrinfo ENOTFOUND test.table.core.windows.net test.table.core.windows.net:443"}},
+                {"O365Poller":{"error":"Error getting stats Error: getaddrinfo ENOTFOUND test.table.core.windows.net test.table.core.windows.net:443"}},
                 {"Updater":{"error":"Error getting stats Error: getaddrinfo ENOTFOUND test.table.core.windows.net test.table.core.windows.net:443"}}
             ];
             

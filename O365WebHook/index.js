@@ -2,6 +2,8 @@
  * @copyright (C) 2017, Alert Logic, Inc
  * @doc
  *
+ * DEPRECATED: due to absence of SLA on notification delivery.
+ *
  * The purpose of this function it to be registered as an O365 webhook and
  * receive/process notifications.
  * https://msdn.microsoft.com/en-us/office-365/office-365-management-activity-api-reference#receiving-notifications

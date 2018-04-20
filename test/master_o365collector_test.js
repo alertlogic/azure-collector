@@ -58,7 +58,7 @@ describe('Master Function o365collector.js Units', function() {
             });
         });
         
-        it('checks already enabled streams with proper webhook configs', function(done) {
+        it('checks already enabled streams ignoring webhook configs', function(done) {
             process.env.O365_CONTENT_STREAMS = 
                 '["Audit.AzureActiveDirectory", "Audit.Exchange", "Audit.SharePoint", "Audit.General"]';
             private_checkEnableAuditStreams(testMock.context, testMock.allEnabledStreams, function(err, streams){
@@ -71,16 +71,16 @@ describe('Master Function o365collector.js Units', function() {
             });
         });
         
-        it('checks subscriptionStart is called for already enabled webhooks if web app is being reinstalled', function(done) {
+        it('checks subscriptionStart is called to remove deprecated webhooks only.', function(done) {
             process.env.O365_CONTENT_STREAMS = 
                 '["Audit.AzureActiveDirectory", "Audit.Exchange", "Audit.SharePoint", "Audit.General"]';
-            var twoOldEnabledStreams = [
+            var twoDeprecatedWebhookStreams = [
               {
                 "contentType": "Audit.AzureActiveDirectory",
                 "status": "enabled",
                 "webhook": {
                   "authId": null,
-                  "address": "https://old-app.azurewebsites.net/api/o365/webhook",
+                  "address": "https://customer.azurewebsites.net/api/o365/customer_webhook",
                   "expiration": "",
                   "status": "enabled"
                 }
@@ -90,7 +90,7 @@ describe('Master Function o365collector.js Units', function() {
                 "status": "enabled",
                 "webhook": {
                   "authId": null,
-                  "address": "https://old-app-o365.azurewebsites.net/api/o365/webhook",
+                  "address": "https://customer.azurewebsites.net/api/o365/customer_webhook",
                   "expiration": "",
                   "status": "enabled"
                 }
@@ -116,20 +116,21 @@ describe('Master Function o365collector.js Units', function() {
                 }
               }
             ];
-            private_checkEnableAuditStreams(testMock.context, twoOldEnabledStreams, function(err, streams){
-                if (err)
-                    return done(err);
-                
-                sinon.assert.callCount(msSubscriptionsStartStub, 2);
-                sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.AzureActiveDirectory");
-                sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.Exchange"); 
-                return done();
+            private_checkEnableAuditStreams(testMock.context, twoDeprecatedWebhookStreams, 
+                function(err, streams){
+                    if (err)
+                        return done(err);
+                    
+                    sinon.assert.callCount(msSubscriptionsStartStub, 2);
+                    sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.General");
+                    sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.SharePoint"); 
+                    return done();
             });
         });
         
         it('checks subscriptionStart is called for disabled streams', function(done) {
             process.env.O365_CONTENT_STREAMS = 
-                '["Audit.AzureActiveDirectory", "Audit.General"]';
+                '["Audit.AzureActiveDirectory", "Audit.Exchange", "Audit.General"]';
             var disabledStreams = [
                 {
                     "contentType": "Audit.AzureActiveDirectory",
@@ -142,27 +143,28 @@ describe('Master Function o365collector.js Units', function() {
                     }
                 },
                 {
+                    "contentType": "Audit.Exchange",
+                    "status": "disabled",
+                    "webhook": null
+                },
+                {
                     "contentType": "Audit.General",
                     "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "enabled"
-                    }
+                    "webhook": null
                 }
            ];
             private_checkEnableAuditStreams(testMock.context, disabledStreams, function(err, streams){
                 if (err)
                     return done(err);
                 
-                sinon.assert.callCount(msSubscriptionsStartStub, 1);
+                sinon.assert.callCount(msSubscriptionsStartStub, 2);
                 sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.AzureActiveDirectory");
+                sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.Exchange");
                 return done();
             });
         });
         
-        it('checks subscriptionStart is called for disabled webhooks', function(done) {
+        it('checks subscriptionStart is NOT called for disabled CUSTOMER\'s webhooks', function(done) {
             process.env.O365_CONTENT_STREAMS = 
                 '["Audit.AzureActiveDirectory", "Audit.General"]';
             var disabledStreams = [
@@ -171,9 +173,9 @@ describe('Master Function o365collector.js Units', function() {
                     "status": "enabled",
                     "webhook": {
                         "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
+                        "address": "https://customer.azurewebsites.net/api/o365/customer_webhook",
                         "expiration": "",
-                        "status": "enabled"
+                        "status": "disabled"
                     }
                 },
                 {
@@ -181,7 +183,7 @@ describe('Master Function o365collector.js Units', function() {
                     "status": "enabled",
                     "webhook": {
                         "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
+                        "address": "https://customer.azurewebsites.net/api/o365/customer_webhook",
                         "expiration": "",
                         "status": "disabled"
                     }
@@ -191,8 +193,7 @@ describe('Master Function o365collector.js Units', function() {
                 if (err)
                     return done(err);
                 
-                sinon.assert.callCount(msSubscriptionsStartStub, 1);
-                sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.General");
+                sinon.assert.callCount(msSubscriptionsStartStub, 0);
                 return done();
             });
         });
@@ -206,22 +207,12 @@ describe('Master Function o365collector.js Units', function() {
                 {
                     "contentType": "Audit.AzureActiveDirectory",
                     "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "enabled"
-                    }
+                    "webhook": null
                 },
                 {
                     "contentType": "Audit.General",
                     "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "disabled"
-                    }
+                    "webhook": null
                 }
             ];
             var msSubscriptionsListStub = sinon.stub(m_o365mgmnt, 'subscriptionsList').callsFake(
@@ -260,22 +251,12 @@ describe('Master Function o365collector.js Units', function() {
                 {
                     "contentType": "Audit.AzureActiveDirectory",
                     "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "enabled"
-                    }
+                    "webhook": null
                 },
                 {
                     "contentType": "Audit.General",
                     "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "disabled"
-                    }
+                    "webhook": null
                 }
             ];
             var msSubscriptionsListStub = sinon.stub(m_o365mgmnt, 'subscriptionsList').callsFake(
@@ -316,22 +297,12 @@ describe('Master Function o365collector.js Units', function() {
                 {
                     "contentType": "Audit.AzureActiveDirectory",
                     "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "enabled"
-                    }
+                    "webhook": null
                 },
                 {
                     "contentType": "Audit.General",
-                    "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "disabled"
-                    }
+                    "status": "disabled",
+                    "webhook": null
                 }
             ];
             var listError = 'Office subscriptionList error';
@@ -371,22 +342,12 @@ describe('Master Function o365collector.js Units', function() {
                 {
                     "contentType": "Audit.AzureActiveDirectory",
                     "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "enabled"
-                    }
+                    "webhook": null
                 },
                 {
                     "contentType": "Audit.General",
-                    "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "disabled"
-                    }
+                    "status": "disabled",
+                    "webhook": null
                 }
             ];
             var startError = 'Office subscriptionStart error';

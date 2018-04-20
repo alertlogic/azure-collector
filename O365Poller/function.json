@@ -1,0 +1,25 @@
+{
+  "bindings": [
+    {
+      "name": "AlertlogicO365ListTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 */5 * * * *"
+    },
+    {
+      "type": "queue",
+      "name": "O365ContentMsg",
+      "queueName": "alertlogic-o365-content-notifications",
+      "connection": "AzureWebJobsDashboard",
+      "direction": "out"
+    },
+    {
+      "type": "queue",
+      "name": "O365ListState",
+      "queueName": "alertlogic-o365-list",
+      "connection": "AzureWebJobsDashboard",
+      "direction": "out"
+    }
+  ],
+  "disabled": false
+}

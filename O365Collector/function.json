@@ -1,0 +1,12 @@
+{
+  "bindings": [
+    {
+      "name": "contentNotification",
+      "type": "queueTrigger",
+      "direction": "in",
+      "queueName": "alertlogic-o365-content-notifications",
+      "connection": ""
+    }
+  ],
+  "disabled": false
+}

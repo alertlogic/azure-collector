@@ -14,6 +14,8 @@
     "local-master": "node ./local_dev/master_local_dev.js",
     "local-updater": "node ./local_dev/updater_local_dev.js",
     "local-o365webhook": "node ./local_dev/o365webhook_local_dev.js",
+    "local-o365poller": "node ./local_dev/o365poller_local_dev.js",
+    "local-o365collector": "node ./local_dev/o365collector_local_dev.js",
     "local-aims": "node ./local_dev/aims_token_local_dev.js",
     "local-ad": "node ./local_dev/ad_token_local_dev.js",
     "local-version": "node ./local_dev/version_local_dev.js",
