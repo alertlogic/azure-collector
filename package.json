@@ -1,6 +1,6 @@
 {
   "name": "azure_collector",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "dependencies": {
     "async": "*",
     "azure": "^2.0.0-preview",
