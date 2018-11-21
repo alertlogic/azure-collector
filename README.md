@@ -40,7 +40,7 @@ In the Office 365 portal, you must register a new Office 365 web application to 
     * In `Sign-on URL` enter a URL (for example `http://alo365collector.com`). 
     **Note:** This information is not used anywhere within your subscription.
 1. Click `Create`.
-1.From the `All applications` tab on the `App registration (Preview)` bade, select `All apps`, and then click the application name you created. 
+1.From the `All applications` tab on the `App registration (Preview)` blade, select `All apps`, and then click the application name you created. 
 1. Make a note of the `Application ID` (for example, `a261478c-84fb-42f9-84c2-de050a4babe3`).
 
 ## Set Up the Required Active Directory Security Permissions
