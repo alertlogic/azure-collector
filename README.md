@@ -8,7 +8,7 @@ This repository contains the Microsoft Azure web application Node.js source code
 
 To perform the set up required to grant Alert Logic permission access to collect Office 365 logs, you must have access to the following:
 
-* A Microsoft Office 365 account with administrative privileges
+* A Microsoft Office 365 subscription with administrative privileges
 * A Microsoft Azure account with administrative privileges
 * An Alert Logic account with administrative privileges
 <!--The information above appears in the AL Docs. If this is still a prerequisite, we need to call it out here. So I did. -->
@@ -28,7 +28,6 @@ Installation requires the following steps:
 In the Office 365 portal, you must register a new Office 365 web application to collect Office 365 logs. 
 
 **To register an Office 365 web application to collect logs:**
-<--! I need a way to verify this procedure, because I do not have the correct privs to verify the procedure. -->
 
 1. Log into the [Office 365 portal](https://portal.office.com) as an Active Directory tenant administrator.
 1. Navigate to `Admin Centers` and `Azure AD`. 
@@ -41,13 +40,10 @@ In the Office 365 portal, you must register a new Office 365 web application to 
     * In `Sign-on URL` enter a URL (for example `http://alo365collector.com`). 
     **Note:** This information is not used anywhere within your subscription.
 1. Click `Create`.
-1. Select `All apps`, and then click the application name you created. 
-<!-- From where is the user selecting "all apps?" -->
+1.From the `All applications` tab on the `App registration (Preview)` bade, select `All apps`, and then click the application name you created. 
 1. Make a note of the `Application ID` (for example, `a261478c-84fb-42f9-84c2-de050a4babe3`).
 
 ## Set Up the Required Active Directory Security Permissions
-
-<!-- Where is the customer performing this procedure? I assumed this is in the Office 365 portal, but there's a reference to blades in the last step, so that indicates Azure. -->
 
 1. On the `Settings` panel under the newly created application, select `Required permissions`, and then click `+ Add`.
 1. Click `Select an API` > `Office 365 Management APIs`, and then click `Select`.
@@ -56,8 +52,7 @@ In the Office 365 portal, you must register a new Office 365 web application to 
 1. Click `Grant Permissions`, and then click `Yes`. 
 **Note:** Only the Active Directory tenant administrator can grant permissions to an Azure Active Directory application.
 1. On the `Settings` panel for the application, select `Keys`.
-1. Enter key `Description` and set `Duration` to `Never expires` then click `Save`.
-<!-- Please clarify this step. "Enter key Description" is not correct, but I don't know what is, because I can't see this UI.-->
+1. Type a key `Description` and set `Duration` to `Never expires` then click `Save`.
 **Note:** Save the key value, which you need during ARM template deployment.
 1. From the `Registered App` blade, click the link under `Managed application in local directory`, and then click `Properties`.
 1. Get the `Service Principal ID` associated with the application. The `Service Principal ID`is labeled as `Object ID` on the properties page.
@@ -148,8 +143,8 @@ You can use either [Azure Cloud Shell](https://docs.microsoft.com/en-gb/azure/cl
         --template-uri "https://raw.githubusercontent.com/alertlogic/azure-collector/master/template.json"
     ```
 
-## Verify the Installation
-To verify successful installation of the Office 365 collector, perform the following steps:
+## Verify the Installation in Microsoft Azure
+To verify successful installation of the Office 365 collector, perform the following steps in Azure:
 
 <!--Is step 1 done in Office 365 or Azure?-->
 1. Go to `Function Apps` and choose the Alert Logic O365 collector function. The recent log entry under `Functions-> Master-> Monitor` should read an OK status (Example: `O365 source checkin OK`) and should not contain any error messages.
