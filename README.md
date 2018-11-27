@@ -15,7 +15,6 @@ To perform the set up required to grant Alert Logic permission access to collect
 * A Microsoft Office 365 subscription with administrative privileges
 * A Microsoft Azure account with administrative privileges
 * An Alert Logic user account with administrative privileges
-<!--The information above appears in the AL Docs. If this is still a prerequisite, we need to call it out here. So I did. -->
 
 
 ## Register a New O365 Web Application in O365
@@ -26,9 +25,7 @@ In the Office 365 portal, you must register a new Office 365 web application to 
 
 1. Log into the [Office 365 portal](https://portal.office.com) as an Active Directory tenant administrator.
 1. Navigate to `Admin Centers` and `Azure AD`.
-<!-- I need to clarify step 2. Where are these options? -->
 1. On the left side panel click `Azure Active Directory`, and then select `App Registrations`.
-<!-- I need to verify step 3. I don't see a left nav area, but I am not an Admin. -->
 1. Click `+ New application registration`, and then provide the following configuration parameters: 
     * `Name`- Provide a name for the new application (For example `alo365collector`).
     * Select `Web app/ API` as `Application type`.
@@ -116,7 +113,7 @@ Click the button below to start deployment.
    - `Alert Logic API endpoint` - Leave the default value (api.global-services.global.alertlogic.com).
    - `Alert Logic Data Residency` - Leave the value as `default`.
    - `Office365 Content Streams` - The log types you want to collect. Valid values are:
-      ["Audit.AzureActiveDirectory","Audit.Exchange","Audit.SharePoint","Audit.General", "DLP.All"]
+      ["Audit.AzureActiveDirectory","Audit.Exchange","Audit.SharePoint","Audit.General"]
    - `Service Principal ID` - The `Object ID` of the application that created the subscription. 
    **Noe** You can obtain this value from _Azure_ -> _AD_ -> _App registrations_ -> _Your app name_ -> Link under _Managed application in local directory_ -> _Properties_ -> _Object ID_.
    - `App Client ID` - The GUID of your application that created the subscription. 
