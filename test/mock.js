@@ -51,6 +51,13 @@ var context = {
     done: function () {
         console.log('Test response:');
     },
+    errorStatusFmt: function(code, message) {
+        return {
+           status: 'error',
+           error_code: code,
+           details: [message]
+       };
+    },
     res: null
 };
 

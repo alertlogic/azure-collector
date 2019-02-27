@@ -18,7 +18,8 @@
             "type": "String",
             "defaultValue": "api.global-services.global.alertlogic.com",
             "allowedValues" : [
-                "api.global-services.global.alertlogic.com"
+                "api.global-services.global.alertlogic.com",
+                "api.global-integration.product.dev.alertlogic.com"
             ]
         },
         "Alert Logic Data Residency": {
@@ -125,12 +126,12 @@
                             "connectionString": "[parameters('App Client Secret')]"
                         },
                         {
-                            "name": "APP_CI_ACCESS_KEY_ID",
+                            "name": "APP_AL_ACCESS_KEY_ID",
                             "type": "Custom",
                             "connectionString": "[parameters('Alert Logic Access Key ID')]"
                         },
                         {
-                            "name": "APP_CI_SECRET_KEY",
+                            "name": "APP_AL_SECRET_KEY",
                             "type": "Custom",
                             "connectionString": "[parameters('Alert Logic Secret Key')]"
                         },
