@@ -1,13 +1,11 @@
 {
   "name": "azure_collector",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "dependencies": {
-    "async": "*",
+    "async": "^2.6.2",
     "azure": "^2.0.0-preview",
-    "moment": "^2.20.1",
-    "parse-key-value": "^1.0.0",
     "path": "^0.12.7",
-    "protobufjs": "*",
+    "al-azure-collector-js": "git://github.com/alertlogic/al-azure-collector-js#master",
     "request-promise-native": "^1.0.4"
   },
   "scripts": {

@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * @copyright (C) 2017, Alert Logic, Inc
+ * @copyright (C) 2019, Alert Logic, Inc
  * @doc
  * 
  * Unit tests for Master function
@@ -16,32 +16,51 @@ var testMock = require('./mock');
 var m_o365mgmnt = require('../lib/o365_mgmnt');
 
 var m_azcollect = require('../Master/azcollect');
-var m_o365collector = rewire('../Master/o365collector');
-var m_appsettings = require('../Master/appsettings');
-var m_appstats = require('../Master/appstats');
+var healthchecks = rewire('../Master/healthchecks');
 
-describe('Master Function o365collector.js Units', function() {
+describe('O365 healthcheck tests', function() {
     var private_checkEnableAuditStreams;
     var msSubscriptionsStartStub;
+    var stubErrorFmt;
     var updateSettingsStub = null;
     
     before(function() {
-        private_checkEnableAuditStreams = m_o365collector.__get__('_checkEnableAuditStreams');
+        private_checkEnableAuditStreams = healthchecks.__get__('_checkEnableAuditStreams');
         msSubscriptionsStartStub = sinon.stub(m_o365mgmnt, 'subscriptionsStart').callsFake(
             function fakeFn(contentType, webhook, callback) {
-                return callback(null);
-        });
+                if(contentType === "Audit.SomeGarbage"){
+                    return callback('stream not found');
+                } else{
+                    return callback(null);
+                }
+            });
+        stubErrorFmt = sinon.stub(testMock.context, 'errorStatusFmt');
     });
     after(function() {
         msSubscriptionsStartStub.restore();
+        stubErrorFmt.restore();
     });
     beforeEach(function() {
         msSubscriptionsStartStub.resetHistory();
+        stubErrorFmt.resetHistory();
     });
     afterEach(function() {
         if (updateSettingsStub) updateSettingsStub.restore();
     });
             
+    describe('checkStreams', function(done){
+        it('should throw the apprirpiate error when the subscriptionsList returns and error', function(){
+            const msSubscriptionsListStub = sinon.stub(m_o365mgmnt, 'subscriptionsList').callsFake(function(callback){
+                return "Somthing went wrong with getting the subscription list in a catestrophic way";
+            });
+
+            healthchecks.checkStreams(testMock.context, function(err, result){
+                sinon.assert.calledWith(stubErrorFmt, 'O365000002');
+                done();
+            });
+        });
+    });
+
     describe('_checkEnableAuditStreams()', function() {
         it('enables configured streams', function(done) {
             process.env.O365_CONTENT_STREAMS = 
@@ -54,6 +73,22 @@ describe('Master Function o365collector.js Units', function() {
                 sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.AzureActiveDirectory");
                 sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.Exchange");
                 sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.General");
+                return done();
+            });
+        });
+
+        it('throws the correct error when an invalid stream is passed in', function(done) {
+            process.env.O365_CONTENT_STREAMS = 
+                '["Audit.AzureActiveDirectory", "Audit.Exchange", "Audit.General", "Audit.SomeGarbage"]';
+            private_checkEnableAuditStreams(testMock.context, [], function(err, streams){
+                if (err)
+                    return done(err);
+
+                sinon.assert.callCount(msSubscriptionsStartStub, 4);
+                sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.AzureActiveDirectory");
+                sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.Exchange");
+                sinon.assert.calledWith(msSubscriptionsStartStub, "Audit.General");
+                sinon.assert.calledWith(stubErrorFmt,'O365000001');
                 return done();
             });
         });
@@ -198,295 +233,4 @@ describe('Master Function o365collector.js Units', function() {
         });
     });
 
-    describe('O365 collector checkin tests', function() {
-        it('checks successful OK checkin', function(done) {
-            process.env.O365_CONTENT_STREAMS = 
-                '["Audit.AzureActiveDirectory", "Audit.General"]';
-            var enabledStreams = [
-                {
-                    "contentType": "Audit.AzureActiveDirectory",
-                    "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "enabled"
-                    }
-                },
-                {
-                    "contentType": "Audit.General",
-                    "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "disabled"
-                    }
-                }
-            ];
-            var msSubscriptionsListStub = sinon.stub(m_o365mgmnt, 'subscriptionsList').callsFake(
-                function fakeFn(callback) {
-                    return callback(null, enabledStreams, null, null);
-            });
-            var expectedStats = [{"Master":{"invocations":20,"errors":1}}];
-            var getAppStatsStub = sinon.stub(m_appstats, 'getAppStats').callsFake(
-                function fakeFn(ts, callback) {
-                    return callback(null, expectedStats);
-            });
-            var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
-            sinon.stub(azcollectSvc, 'checkin').resolves([{}]);
-
-            m_o365collector.checkin(testMock.context, testMock.timer, azcollectSvc, 
-                function(err, resp){
-                    if (err) {
-                        msSubscriptionsListStub.restore();
-                        getAppStatsStub.restore();
-                        return done(err);
-                    } else {                 
-                        sinon.assert.callCount(azcollectSvc.checkin, 1);
-                        sinon.assert.calledWith(azcollectSvc.checkin,
-                            'o365', process.env.O365_COLLECTOR_ID, 'ok', sinon.match.any, expectedStats);
-                        msSubscriptionsListStub.restore();
-                        getAppStatsStub.restore();
-                        return done();
-                    }
-            });
-        });
-        
-        it('checks successful OK checkin, stats Error', function(done) {
-            process.env.O365_CONTENT_STREAMS = 
-                '["Audit.AzureActiveDirectory", "Audit.General"]';
-            var enabledStreams = [
-                {
-                    "contentType": "Audit.AzureActiveDirectory",
-                    "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "enabled"
-                    }
-                },
-                {
-                    "contentType": "Audit.General",
-                    "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "disabled"
-                    }
-                }
-            ];
-            var msSubscriptionsListStub = sinon.stub(m_o365mgmnt, 'subscriptionsList').callsFake(
-                function fakeFn(callback) {
-                    return callback(null, enabledStreams, null, null);
-            });
-            var statsError = 'Sample stats error';
-            var getAppStatsStub = sinon.stub(m_appstats, 'getAppStats').callsFake(
-                function fakeFn(ts, callback) {
-                    return callback(statsError);
-            });
-            var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
-            sinon.stub(azcollectSvc, 'checkin').resolves([{}]);
-            
-            var expectedStats = [{error : `Error getting application stats: ${statsError}`}];
-            m_o365collector.checkin(testMock.context, testMock.timer, azcollectSvc, 
-                function(err, resp){
-                    if (err) {
-                        msSubscriptionsListStub.restore();
-                        getAppStatsStub.restore();
-                        return done(err);
-                    } else {                 
-                        sinon.assert.callCount(azcollectSvc.checkin, 1);
-                        sinon.assert.calledWith(azcollectSvc.checkin,
-                            'o365', process.env.O365_COLLECTOR_ID, 'ok', sinon.match.any, expectedStats);
-                        msSubscriptionsListStub.restore();
-                        getAppStatsStub.restore();
-                        return done();
-                    }
-            });
-        });
-        
-                
-        it('checks successful Error checkin during Office subscriptionList error', function(done) {
-            process.env.O365_CONTENT_STREAMS = 
-                '["Audit.AzureActiveDirectory", "Audit.General"]';
-            var enabledStreams = [
-                {
-                    "contentType": "Audit.AzureActiveDirectory",
-                    "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "enabled"
-                    }
-                },
-                {
-                    "contentType": "Audit.General",
-                    "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "disabled"
-                    }
-                }
-            ];
-            var listError = 'Office subscriptionList error';
-            var msSubscriptionsListStub = sinon.stub(m_o365mgmnt, 'subscriptionsList').callsFake(
-                function fakeFn(callback) {
-                    return callback(listError);
-            });
-            const expectedStats = [{"Master":{"invocations":20,"errors":1}}];
-            var getAppStatsStub = sinon.stub(m_appstats, 'getAppStats').callsFake(
-                function fakeFn(ts, callback) {
-                    return callback(null, expectedStats);
-            });
-            var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
-            sinon.stub(azcollectSvc, 'checkin').resolves([{}]);
-
-            m_o365collector.checkin(testMock.context, testMock.timer, azcollectSvc, 
-                function(err, resp){
-                    if (err) {
-                        msSubscriptionsListStub.restore();
-                        getAppStatsStub.restore();
-                        return done(err);
-                    } else {                 
-                        sinon.assert.callCount(azcollectSvc.checkin, 1);
-                        sinon.assert.calledWith(azcollectSvc.checkin,
-                            'o365', process.env.O365_COLLECTOR_ID, 'error', listError, expectedStats);
-                        msSubscriptionsListStub.restore();
-                        getAppStatsStub.restore();
-                        return done(null);
-                    }
-            });
-        });
-        
-        it('checks successful Error checkin during Office subscriptionStart error', function(done) {
-            process.env.O365_CONTENT_STREAMS = 
-                '["Audit.AzureActiveDirectory", "Audit.General"]';
-            var enabledStreams = [
-                {
-                    "contentType": "Audit.AzureActiveDirectory",
-                    "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "enabled"
-                    }
-                },
-                {
-                    "contentType": "Audit.General",
-                    "status": "enabled",
-                    "webhook": {
-                        "authId": null,
-                        "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-                        "expiration": "",
-                        "status": "disabled"
-                    }
-                }
-            ];
-            var startError = 'Office subscriptionStart error';
-            var msSubscriptionsListStub = sinon.stub(m_o365mgmnt, 'subscriptionsList').callsFake(
-                function fakeFn(callback) {
-                    return callback(null, enabledStreams, null, null);
-            });
-            const expectedStats = [{"Master":{"invocations":20,"errors":1}}];
-            var getAppStatsStub = sinon.stub(m_appstats, 'getAppStats').callsFake(
-                function fakeFn(ts, callback) {
-                    return callback(null, expectedStats);
-            });
-            msSubscriptionsStartStub.restore();
-            var msSubscriptionsStartErrorStub = sinon.stub(m_o365mgmnt, 'subscriptionsStart').callsFake(
-            function fakeFn(contentType, webhook, callback) {
-                return callback(startError);
-            });
-            var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
-            sinon.stub(azcollectSvc, 'checkin').resolves([{}]);
-
-            m_o365collector.checkin(testMock.context, testMock.timer, azcollectSvc, 
-                function(err, resp){
-                    if (err) {
-                        msSubscriptionsListStub.restore();
-                        msSubscriptionsStartErrorStub.restore();
-                        getAppStatsStub.restore();
-                        return done(err);
-                    } else {                 
-                        sinon.assert.callCount(azcollectSvc.checkin, 1);
-                        sinon.assert.calledWith(azcollectSvc.checkin,
-                            'o365', process.env.O365_COLLECTOR_ID, 'error', startError, expectedStats);
-                        msSubscriptionsListStub.restore();
-                        msSubscriptionsStartErrorStub.restore();
-                        getAppStatsStub.restore();
-                        return done(null);
-                    }
-            });
-        });
-    });
-    
-    describe('O365 collector register tests', function() {
-        it('checks collector and host id are reused if already registered', function(done) {
-            process.env.O365_COLLECTOR_ID  = 'existing-collector-id';
-            process.env.O365_HOST_ID  = 'existing-collector-id';
-            updateSettingsStub = sinon.stub(m_appsettings, 'updateAppsettings').callsFake(
-                function fakeFn(settings, callback) {
-                    return callback(null, settings);
-            });
-            var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
-            sinon.stub(azcollectSvc, 'register_o365').resolves({
-                source : {
-                    id : 'new-source-id',
-                    host : {
-                        id : 'new-host-id'
-                    }
-                }            
-            });
-
-            m_o365collector.checkRegister(testMock.context, testMock.timer, azcollectSvc, 
-                function(err, resp){
-                    if (err) {
-                        return done(err);
-                    } else {
-                        sinon.assert.callCount(updateSettingsStub, 0);
-                        sinon.assert.callCount(azcollectSvc.register_o365, 0);
-                        return done();
-                    }
-            });
-        });
-        
-        it('checks updateSettings is called during registration', function(done) {
-            process.env.O365_COLLECTOR_ID = null;
-            updateSettingsStub = sinon.stub(m_appsettings, 'updateAppsettings').callsFake(
-                function fakeFn(settings, callback) {
-                    return callback(null, settings);
-            });
-            var azcollectSvc = new m_azcollect.Azcollect('api-endpoint', 'creds');
-            sinon.stub(azcollectSvc, 'register_o365').resolves({
-                source : {
-                    id : 'new-source-id',
-                    host : {
-                        id : 'new-host-id'
-                    }
-                }            
-            });
-
-            m_o365collector.checkRegister(testMock.context, testMock.timer, azcollectSvc, 
-                function(err, resp){
-                    if (err) {
-                        return done(err);
-                    } else {
-                        var expectedSettings = {
-                            O365_COLLECTOR_ID: 'new-source-id',
-                            O365_HOST_ID: 'new-host-id'
-                        };               
-                        sinon.assert.callCount(updateSettingsStub, 1);
-                        sinon.assert.calledWith(updateSettingsStub, expectedSettings);
-                        return done();
-                    }
-            });
-        });
-    });
 });
