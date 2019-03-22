@@ -15,7 +15,6 @@ var sinon = require('sinon');
 var testMock = require('./mock');
 var m_o365mgmnt = require('../lib/o365_mgmnt');
 
-var m_azcollect = require('../Master/azcollect');
 var healthchecks = rewire('../Master/healthchecks');
 
 describe('O365 healthcheck tests', function() {
@@ -50,10 +49,6 @@ describe('O365 healthcheck tests', function() {
             
     describe('checkStreams', function(done){
         it('should throw the apprirpiate error when the subscriptionsList returns and error', function(){
-            const msSubscriptionsListStub = sinon.stub(m_o365mgmnt, 'subscriptionsList').callsFake(function(callback){
-                return "Somthing went wrong with getting the subscription list in a catestrophic way";
-            });
-
             healthchecks.checkStreams(testMock.context, function(err, result){
                 sinon.assert.calledWith(stubErrorFmt, 'O365000002');
                 done();
