@@ -15,9 +15,11 @@ const { AlAzureMaster } = require('al-azure-collector-js');
 const { checkStreams } = require('./healthchecks.js');
 
 //get the old o365 collector parameters if they exist
-const g_aimsCreds = {};
-if(process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID) g_aimsCreds.aimsKeyId = process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID;
-if(process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY) g_aimsCreds.aimsKeySecret = process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY;
+const collectorKeys = {};
+if(process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID) collectorKeys.aimsKeyId = process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID;
+if(process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY) collectorKeys.aimsKeySecret = process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY;
+if(process.env.CUSTOMCONNSTR_O365_HOST_ID) collectorKeys.hostId = process.env.CUSTOMCONNSTR_O365_HOST_ID;
+if(process.env.CUSTOMCONNSTR_O365_COLLECTOR_ID) collectorKeys.sourceId = process.env.CUSTOMCONNSTR_O365_COLLECTOR_ID;
 
 const APP_FUNCTIONS = ['Master', 'Updater', 'O365WebHook'];
 
@@ -25,7 +27,7 @@ module.exports = function (context, AlertlogicMasterTimer) {
     const healthFuns = [
         checkStreams
     ];
-    const master = new AlAzureMaster(context, 'o365', pkg.version, healthFuns, null, g_aimsCreds, {}, APP_FUNCTIONS);
+    const master = new AlAzureMaster(context, 'o365', pkg.version, healthFuns, null, collectorKeys, {}, APP_FUNCTIONS);
     async.waterfall([
         function(asyncCallback) {
             return master.register(_o365RegisterBody(), asyncCallback);
