@@ -18,8 +18,8 @@ const { checkStreams } = require('./healthchecks.js');
 const collectorKeys = {};
 if(process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID) collectorKeys.aimsKeyId = process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID;
 if(process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY) collectorKeys.aimsKeySecret = process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY;
-if(process.env.CUSTOMCONNSTR_O365_HOST_ID) collectorKeys.hostId = process.env.CUSTOMCONNSTR_O365_HOST_ID;
-if(process.env.CUSTOMCONNSTR_O365_COLLECTOR_ID) collectorKeys.sourceId = process.env.CUSTOMCONNSTR_O365_COLLECTOR_ID;
+if(process.env.O365_HOST_ID) collectorKeys.hostId = process.env.O365_HOST_ID;
+if(process.env.O365_COLLECTOR_ID) collectorKeys.sourceId = process.env.O365_COLLECTOR_ID;
 
 const APP_FUNCTIONS = ['Master', 'Updater', 'O365WebHook'];
 
