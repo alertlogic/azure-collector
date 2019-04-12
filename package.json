@@ -5,7 +5,8 @@
     "async": "^2.6.2",
     "azure": "^2.0.0-preview",
     "path": "^0.12.7",
-    "al-azure-collector-js": "git://github.com/alertlogic/al-azure-collector-js#master",
+    "@alertlogic/al-azure-collector-js": "^1.1.1",
+    "@alertlogic/al-collector-js": "^1.1.2",
     "request-promise-native": "^1.0.4"
   },
   "scripts": {

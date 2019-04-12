@@ -11,7 +11,7 @@
  
 const async = require('async');
 const pkg = require('../package.json');
-const { AlAzureMaster } = require('al-azure-collector-js');
+const { AlAzureMaster } = require('@alertlogic/al-azure-collector-js');
 const { checkStreams } = require('./healthchecks.js');
 
 //get the old o365 collector parameters if they exist

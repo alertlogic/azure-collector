@@ -8,7 +8,7 @@
  * ----------------------------------------------------------------------------
  */
 
-const Parse = require('al-collector-js').Parse;
+const Parse = require('@alertlogic/al-collector-js').Parse;
 
 module.exports = function(item) {
     //Paths from https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#common-schema
