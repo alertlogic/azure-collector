@@ -15,7 +15,7 @@ var sinon = require('sinon');
 var testMock = require('./mock');
 var m_o365mgmnt = require('../lib/o365_mgmnt');
 var m_o365content = rewire('../O365WebHook/o365content');
-const AlAzureCollector = require('al-azure-collector-js').AlAzureCollector;
+const AlAzureCollector = require('@alertlogic/al-azure-collector-js').AlAzureCollector;
 describe('O365WebHook Function o365content.js units.', function() {
     var clock;
 

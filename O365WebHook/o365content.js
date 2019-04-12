@@ -14,7 +14,7 @@ const async = require('async');
 const pkg = require('../package.json');
 
 const m_o365mgmnt = require('../lib/o365_mgmnt');
-const AlAzureCollector = require('al-azure-collector-js').AlAzureCollector;
+const AlAzureCollector = require('@alertlogic/al-azure-collector-js').AlAzureCollector;
 const formatO365Log = require('./formatO365Log');
 
 // One O365 content message is about 1KB.
