@@ -37,7 +37,7 @@ module.exports = function(item) {
         messageType: 'json/azure.o365'
     };
     
-    if (messageTypeId) {
+    if (messageTypeId !== undefined && messageTypeId !== null) {
         formattedMsg.messageTypeId = `${messageTypeId}`;
     }
     if (creationTime.usec) {

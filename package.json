@@ -6,7 +6,7 @@
     "azure": "^2.0.0-preview",
     "path": "^0.12.7",
     "@alertlogic/al-azure-collector-js": "^1.1.1",
-    "@alertlogic/al-collector-js": "^1.1.2",
+    "@alertlogic/al-collector-js": "^1.2.4",
     "request-promise-native": "^1.0.4"
   },
   "scripts": {
