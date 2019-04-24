@@ -38,10 +38,10 @@ module.exports = function(item) {
     };
     
     if (messageTypeId) {
-        Object.assign(formattedMsg, {messageTypeId: `${messageTypeId}`});
+        formattedMsg.messageTypeId = `${messageTypeId}`;
     }
     if (creationTime.usec) {
-        Object.assign(formattedMsg, {messageTsUs: creationTime.usec});
+        formattedMsg.messageTsUs = creationTime.usec;
     }
     return formattedMsg;
 };
