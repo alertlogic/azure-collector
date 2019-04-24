@@ -40,7 +40,7 @@ module.exports = function(item) {
     if (messageTypeId !== undefined && messageTypeId !== null) {
         formattedMsg.messageTypeId = `${messageTypeId}`;
     }
-    if (typeof creationTime.usec === 'number' && !isNaN(creationTime.usec)) {
+    if (creationTime.usec) {
         formattedMsg.messageTsUs = creationTime.usec;
     }
     return formattedMsg;
