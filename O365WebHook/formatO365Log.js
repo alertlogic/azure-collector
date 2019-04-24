@@ -29,15 +29,19 @@ module.exports = function(item) {
 
     let creationTime = Parse.getMsgTs(item, creationTimePaths);
     let messageTypeId = Parse.getMsgTypeId(item, messageTypeIdPaths);
-
-    return {
+    let formattedMsg = {
         messageTs: creationTime.sec,
         priority: 11,
         progName: 'o365webhook',
-        pid: undefined,
         message: message,
-        messageType: 'json/azure.o365',
-        messageTypeId: `${messageTypeId}`,
-        messageTsUs: creationTime.usec ? creationTime.usec : undefined
+        messageType: 'json/azure.o365'
     };
+    
+    if (messageTypeId) {
+        formattedMsg.messageTypeId = `${messageTypeId}`;
+    }
+    if (creationTime.usec) {
+        formattedMsg.messageTsUs = creationTime.usec;
+    }
+    return formattedMsg;
 };
