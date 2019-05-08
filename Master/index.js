@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * @copyright (C) 2017, Alert Logic, Inc
+ * @copyright (C) 2019, Alert Logic, Inc
  * @doc
  * 
  * The purpose of this function is to check updates of collector configuration,
@@ -10,51 +10,36 @@
  */
  
 const async = require('async');
+const pkg = require('../package.json');
+const { AlAzureMaster } = require('@alertlogic/al-azure-collector-js');
+const { checkStreams } = require('./healthchecks.js');
 
-const m_endpoints = require('./endpoints');
-const m_azcollect = require('./azcollect');
-const m_o365collector = require('./o365collector');
+//get the old o365 collector parameters if they exist
+const collectorKeys = {};
+if(process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID) collectorKeys.aimsKeyId = process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID;
+if(process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY) collectorKeys.aimsKeySecret = process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY;
+if(process.env.O365_HOST_ID) collectorKeys.hostId = process.env.O365_HOST_ID;
+if(process.env.O365_COLLECTOR_ID) collectorKeys.sourceId = process.env.O365_COLLECTOR_ID;
 
-const g_aimsCreds = {
-    access_key_id : process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID,
-    secret_key : process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY
-};
+const APP_FUNCTIONS = ['Master', 'Updater', 'O365WebHook'];
 
 module.exports = function (context, AlertlogicMasterTimer) {
+    const healthFuns = [
+        checkStreams
+    ];
+    const master = new AlAzureMaster(context, 'o365', pkg.version, healthFuns, null, collectorKeys, {}, APP_FUNCTIONS);
     async.waterfall([
         function(asyncCallback) {
-            return m_endpoints.checkUpdate(context, AlertlogicMasterTimer,
-                function(endpointsError) {
-                    if (endpointsError) {
-                        return asyncCallback(endpointsError);
-                    }
-                    context.log.info('Alertlogic endpoints updated.');
-                    return asyncCallback(null);
+            return master.register(_o365RegisterBody(), asyncCallback);
+        },
+        function(hostId, sourceId, asyncCallback) {
+            return master.checkin(AlertlogicMasterTimer.last, (checkinErr, checkinRes) => {
+                if (checkinErr) {
+                    return asyncCallback(`Checkin failed ${checkinErr}`);
+                }
+                context.log.info(`O365 source checkin OK`, checkinRes);
+                return asyncCallback(null, {});
             });
-        },
-        function(asyncCallback) {
-            let azcollectSvc = new m_azcollect.Azcollect(
-                process.env.APP_AZCOLLECT_ENDPOINT, g_aimsCreds);
-            return m_o365collector.checkRegister(context,
-                    AlertlogicMasterTimer, azcollectSvc,
-                function(azcollectError, collectorId) {
-                    if (azcollectError) {
-                        return asyncCallback(azcollectError);
-                    }
-                    context.log.info('O365 source registered', collectorId);
-                    return asyncCallback(null, azcollectSvc);
-                });
-        },
-        function(azcollectSvc, asyncCallback) {
-            return m_o365collector.checkin(context,
-                    AlertlogicMasterTimer.last, azcollectSvc,
-                function(azcollectError, checkinResp) {
-                    if (azcollectError) {
-                        return asyncCallback(`Checkin failed ${azcollectError}`);
-                    }
-                    context.log.info('O365 source checkin OK', checkinResp);
-                    return asyncCallback(null);
-                });
         }
     ],
     function(error, results) {
@@ -64,3 +49,14 @@ module.exports = function (context, AlertlogicMasterTimer) {
         context.done(error);
     });
 };
+
+function _o365RegisterBody() {
+    let o365AuditStreams = JSON.parse(process.env.O365_CONTENT_STREAMS);
+    return {
+        config : {
+            type : 'o365',
+            office_tenant_id : process.env.APP_TENANT_ID,
+            content_streams: o365AuditStreams
+        }
+    };
+}

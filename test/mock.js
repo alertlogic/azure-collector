@@ -9,8 +9,6 @@
  */
  
 const util = require('util');
-const fs = require('fs');
-const m_alUtil = require('../lib/al_util');
 
 process.env.WEBSITE_HOSTNAME = 'kkuzmin-app-o365.azurewebsites.net';
 process.env.WEBSITE_SITE_NAME = 'kkuzmin-app-o365.azurewebsites.net';
@@ -51,6 +49,13 @@ var context = {
     done: function () {
         console.log('Test response:');
     },
+    errorStatusFmt: function(code, message) {
+        return {
+           status: 'error',
+           error_code: code,
+           details: [message]
+       };
+    },
     res: null
 };
 
@@ -71,49 +76,6 @@ var allEnabledStreams = [
     "webhook": {
       "authId": null,
       "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
-  },
-  {
-    "contentType": "Audit.General",
-    "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
-  },
-  {
-    "contentType": "Audit.SharePoint",
-    "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://kkuzmin-app-o365.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
-  }
-];
-
-var twoOldEnabledStreams = [
-  {
-    "contentType": "Audit.AzureActiveDirectory",
-    "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://old-app.azurewebsites.net/api/o365/webhook",
-      "expiration": "",
-      "status": "enabled"
-    }
-  },
-  {
-    "contentType": "Audit.Exchange",
-    "status": "enabled",
-    "webhook": {
-      "authId": null,
-      "address": "https://old-app-o365.azurewebsites.net/api/o365/webhook",
       "expiration": "",
       "status": "enabled"
     }

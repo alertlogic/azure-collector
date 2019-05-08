@@ -1,6 +1,6 @@
 const util = require('util');
 
-var devConfig = require('./dev_config');
+require('./dev_config');
 var azureFunction = require('../O365WebHook/index');
 
 // Local development query and body params

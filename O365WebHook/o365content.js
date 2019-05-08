@@ -11,24 +11,24 @@
  */
 
 const async = require('async');
-const zlib = require('zlib');
+const pkg = require('../package.json');
 
 const m_o365mgmnt = require('../lib/o365_mgmnt');
-const m_ingestProto = require('./ingest_proto');
-const m_ingest = require('./ingest');
-
-const g_ingestc = new m_ingest.Ingest(
-        process.env.APP_INGEST_ENDPOINT,
-        {
-            access_key_id : process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID,
-            secret_key: process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY
-        }
-);
+const AlAzureCollector = require('@alertlogic/al-azure-collector-js').AlAzureCollector;
+const formatO365Log = require('./formatO365Log');
 
 // One O365 content message is about 1KB.
-var MAX_BATCH_MESSAGES = 1500;
+let MAX_BATCH_MESSAGES = 1500;
 
 module.exports.processNotifications = function(context, notifications, callback) {
+    //get the old o365 collector parameters if they exist
+    const collectorKeys = {};
+    if(process.env.O365_COLLECTOR_ID) collectorKeys.sourceId = process.env.O365_COLLECTOR_ID;
+    if(process.env.O365_HOST_ID) collectorKeys.hostId = process.env.O365_HOST_ID;
+    if(process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID) collectorKeys.aimsKeyId = process.env.CUSTOMCONNSTR_APP_CI_ACCESS_KEY_ID;
+    if(process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY) collectorKeys.aimsKeySecret = process.env.CUSTOMCONNSTR_APP_CI_SECRET_KEY;
+
+    const collector = new AlAzureCollector(context, 'o365', pkg.version, collectorKeys);
     async.map(notifications, function(notification, asyncCallback) {
         return m_o365mgmnt.getContent(notification.contentUri, asyncCallback);
     }, function(fetchErr, mapResult) {
@@ -37,25 +37,41 @@ module.exports.processNotifications = function(context, notifications, callback)
         } else {
             const flattenResult = [].concat.apply([], mapResult);
             context.log.verbose('Messages fetched:', flattenResult.length);
-            return processContent(context, flattenResult, callback);
+            return processContent(context, flattenResult, collector, callback);
         }
     });
 };
 
-function processContent(context, content, callback) {
+function processContent(context, content, collector, callback) {
     const slices = getSliceIndexes(content.length);
-    return async.map(slices, function(slice, asyncCallback){
-        const contentSlice = content.slice(slice.start, slice.end);
-        parseContent(context, contentSlice,
-            function(err, parsedContent) {
-                if (err) {
-                    return asyncCallback(err);
+    const acc = {processed: 0, skip:0};
+    return async.mapLimit(slices, process.env.concurrentLogProcesses || 5,
+        function(slice, asyncCallback){
+            const contentSlice = content.slice(slice.start, slice.end);
+            collector.processLog(contentSlice, formatO365Log, null,
+                function(err, parsedContent) {
+                    if (err) {
+                        acc.skip += contentSlice.length;
+                        context.log.error(`error from log processing ${JSON.stringify(err)}`);
+                    }
+                    else {
+                        acc.processed += contentSlice.length;
+                    }
+                    return asyncCallback(null, acc);
+            });
+        },
+        function(err){
+            if(err){
+                context.log.error('Records skipped:', content.length);
+                return callback(err);
+            } else {
+                context.log.info('Processed:', acc.processed);
+                if(acc.skip) {
+                    context.log.info('Records skipped:', acc.skip);
                 }
-                else {
-                    return sendToIngest(context, parsedContent, asyncCallback);
-                }
-        });
-    }, callback);
+            }
+            return callback(null, acc);
+    });
 }
 
 function getSliceIndexes(contentLength) {
@@ -72,104 +88,4 @@ function getSliceIndexes(contentLength) {
     return sliceArray;
 }
 
-// Parse each message into:
-// {
-//  hostname: <smth>
-//  message_ts: <CreationTime from the message>
-//  message: <string representation of msg>
-// }
-function parseContent(context, parsedContent, callback) {
-    async.reduce(parsedContent, [], function(memo, item, callback) {
-            var message;
-            try {
-                message = JSON.stringify(item);
-            }
-            catch(err) {
-                return callback(`Unable to stringify content. ${err}`);
-            }
 
-            var creationTime;
-            if (item.CreationTime == undefined) {
-                context.log.warn('Unable to parse CreationTime from content.');
-                creationTime = Math.floor(Date.now() / 1000);
-            }
-            else {
-                creationTime = Math.floor(Date.parse(item.CreationTime) / 1000);
-            }
-
-            var newItem = {
-                message_ts: creationTime,
-                record_type: (item.RecordType) ?
-                                item.RecordType.toString() :
-                                item.RecordType,
-                message: message
-            };
-
-            memo.push(newItem);
-            return callback(null, memo);
-        },
-        function(err, result) {
-            if (err) {
-                return callback(`Content parsing failure. ${err}`);
-            } else {
-                return callback(null, result);
-            }
-        }
-    );
-}
-
-function sendToIngest(context, content, callback) {
-    async.waterfall([
-        function(asyncCallback) {
-            m_ingestProto.load(context, function(err, root) {
-                asyncCallback(err, root);
-            });
-        },
-        function(root, asyncCallback) {
-            m_ingestProto.setMessage(context, root, content, function(err, msg) {
-                asyncCallback(err, root, msg);
-            });
-        },
-        function(root, msg, asyncCallback) {
-            m_ingestProto.setHostMetadata(context, root, content, function(err, meta) {
-                asyncCallback(err, root, meta, msg);
-            });
-        },
-        function(root, meta, msg, asyncCallback) {
-            m_ingestProto.setBatch(context, root, meta, msg, function(err, batch) {
-                asyncCallback(err, root, batch);
-            });
-        },
-        function(root, batchBuf, asyncCallback) {
-            m_ingestProto.setBatchList(context, root, batchBuf,
-                function(err, batchList) {
-                    asyncCallback(err, root, batchList);
-                });
-        },
-        function(root, batchList, asyncCallback) {
-            m_ingestProto.encode(context, root, batchList, asyncCallback);
-        }],
-        function(err, result) {
-            if (err) {
-                return callback(err);
-            }
-
-            zlib.deflate(result, function(err, compressed) {
-                if (err) {
-                    return callback(`Unable to compress. ${err}`);
-                } else {
-                    if (compressed.byteLength > 700000)
-                        context.log.warn(`Compressed log batch length`,
-                            `(${compressed.byteLength}) exceeds maximum allowed value.`);
-                    return g_ingestc.sendO365Data(compressed)
-                        .then(resp => {
-                            context.log.verbose('Bytes sent to Ingest: ', compressed.byteLength);
-                            return callback(null, resp);
-                        })
-                        .catch(function(exception){
-                            return callback(`Unable to send to Ingest. ${exception}`);
-                        });
-                }
-            });
-        });
-}
