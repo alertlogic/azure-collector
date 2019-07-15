@@ -39,7 +39,7 @@ module.exports = function (context, AlertlogicMasterTimer) {
                     return asyncCallback(`Checkin failed ${checkinErr}`);
                 }
                 // If checkin is ok, but receives teh forced update signal update the collector 
-                if(checkinRes && checkinRes.forceUpdate === true){
+                if(checkinRes && checkinRes.force_update === true){
                     context.log.info(`O365 source checkin OK, forced update started`, checkinRes);
                     const updater = new AlAzureUpdater();
                     updater.syncWebApp(function(syncError){
