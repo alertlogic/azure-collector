@@ -13,6 +13,7 @@ const async = require('async');
 const pkg = require('../package.json');
 const { AlAzureMaster } = require('@alertlogic/al-azure-collector-js');
 const { checkStreams } = require('./healthchecks.js');
+const AlAzureUpdater = require('@alertlogic/al-azure-collector-js').AlAzureUpdater;
 
 //get the old o365 collector parameters if they exist
 const collectorKeys = {};
@@ -37,8 +38,24 @@ module.exports = function (context, AlertlogicMasterTimer) {
                 if (checkinErr) {
                     return asyncCallback(`Checkin failed ${checkinErr}`);
                 }
-                context.log.info(`O365 source checkin OK`, checkinRes);
-                return asyncCallback(null, {});
+                // If checkin is ok, but receives teh forced update signal update the collector 
+                if(checkinRes && checkinRes.forceUpdate === true){
+                    context.log.info(`O365 source checkin OK, forced update started`, checkinRes);
+                    const updater = new AlAzureUpdater();
+                    updater.syncWebApp(function(syncError){
+                        if(syncError){
+                            return asyncCallback(`Forced update application sync failed: ${syncError}`);
+                        } else {
+                            context.log.info('Forced update application sync OK');
+                            return asyncCallback(null, {});
+                        }
+                    });
+                }
+                // Otherwise just report that checkin was ok
+                else{
+                    context.log.info(`O365 source checkin OK`, checkinRes);
+                    return asyncCallback(null, {});
+                }
             });
         }
     ],
