@@ -39,7 +39,7 @@ In the Office 365 portal, you must register a new Office 365 web application to 
 
 1. On the `Settings` panel, under the newly created Application, select `Required permissions`, and click then click `+ Add`.
 1. Click `Select an API` -> `Office 365 Management APIs`, and then click `Select`.
-1. In `Application permissions`, click `Read service health information for your organization` -> `Read activity data for your organization` -> `Read threat intelligence data for your organization` -> `Read activity reports for your organization`. 
+1. In `Application permissions`, select `ActivityFeed.Read`, `ActivityFeed.ReadDlp`, `ActivityReports.Read`(both), `ServiceHealth.Read`, and `ThreatIntelligence.Read`(both). 
 1. Click `Select`, and then click `Done`. 
 1. Click `Grant Permissions`, and then click `Yes`. 
 **Note:** Only the Active Directory tenant administrator can grant permissions to an Azure Active Directory application.
@@ -52,6 +52,11 @@ In the Office 365 portal, you must register a new Office 365 web application to 
 **Caution:** This ID is not the same `Object ID` found under the `Registered app` view or under the `Settings`.
 
 ## Create an Alert Logic Access Key
+
+### Via the UI
+We recommend creating an access key via the UI by following [These Instructions](https://docs.alertlogic.com/prepare/access-key-management.htm). Hoever if you prefer you can use the command line instructions below
+
+### Via the command line
 
 **From the Bash command line in [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart) run the following commands, where `<username>` is your Alert Logic user name and `<password>` is your Alert Logic password:**
 
@@ -107,6 +112,7 @@ Click the button below to start deployment.
 
 1. Provide the following required template parameters and click the `Purchase` button to start a deployment:
    - `Name` - Type the name of the log source to appear in the Alert Logic console.
+   - `Resource Group` - We recommend that you create a new resource group for the collector.
    - `Storage Name` - Any storage account name (that does not currently exist).
    - `Alert Logic Access Key ID` - The `access_key_id` you created above
    - `Alert Logic Secret Key` - The `secret_key` you created above.
