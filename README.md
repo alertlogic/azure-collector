@@ -24,34 +24,39 @@ In the Office 365 portal, you must register a new Office 365 web application to 
 **To register an Office 365 web application to collect logs:**
 
 1. Log into the [Office 365 portal](https://portal.office.com) as an Active Directory tenant administrator.
-1. Navigate to `Admin Centers` and `Azure AD`.
-1. On the left side panel click `Azure Active Directory`, and then select `App Registrations`.
-1. Click `+ New application registration`, and then provide the following configuration parameters: 
+1. Navigate to `Admin Centers` and then `Azure AD`.
+1. In the left navigation area, click `Azure Active Directory`, and then select `App Registrations`.
+1. Click `+ New application registration` and then provide the following information:
     * `Name`- Provide a name for the new application (For example `alo365collector`).
-    * Select `Web app/ API` as `Application type`.
-    * `Sign-on URL` - Type a URL for the application (for example `http://alo365collector.com`). 
-    **Note** This information is not used anywhere within your subscription.
-1. Click `Create`.
+    * Select Single tenant option for supported account types.
+    * Leave the Redirect URI blank.
+1. Click Register 
 1. From the `All applications` tab on the `App registration (Preview)` blade, select `All apps`, and then click the application name you created. 
 1. Note the `Application ID`, for example, `a261478c-84fb-42f9-84c2-de050a4babe3`
 
 ## Set Up the Required Active Directory Security Permissions
 
-1. On the `Settings` panel, under the newly created Application, select `Required permissions`, and click then click `+ Add`.
-1. Click `Select an API` -> `Office 365 Management APIs`, and then click `Select`.
-1. In `Application permissions`, click `Read service health information for your organization` -> `Read activity data for your organization` -> `Read threat intelligence data for your organization` -> `Read activity reports for your organization`. 
+1. On the main panel under the new application, select `View API Permissions`, and then click `+ Add`.
+1. Locate the `Office 365 Management APIs`, and then click `Select`.
+1. In `Application permissions`, expand then select `ActivityFeed.Read`, `ActivityFeed.ReadDlp`, `ActivityReports.Read`(both), `ServiceHealth.Read`, and `ThreatIntelligence.Read`(both). 
 1. Click `Select`, and then click `Done`. 
 1. Click `Grant Permissions`, and then click `Yes`. 
 **Note:** Only the Active Directory tenant administrator can grant permissions to an Azure Active Directory application.
-1. On the `Settings` panel for the application, select `Keys`.
+1. On the `Settings` panel for the application, select `Certificated & Secrets`.
+1. Select the `+ New client secret` button.
 1. Type a key `Description`, and then set `Duration` to `Never expires`. 
-1. Click `Save`.
+1. Click `Add`.
 **Note:** Save the key value, which you need during ARM template deployment.
 1. From the `Registered App` blade, click the link under `Managed application in local directory`, and then click `Properties`.
 1. Get the `Service Principal ID` associated with the application. (The `Service Principal ID`is labeled as `Object ID` on the properties page.)
 **Caution:** This ID is not the same `Object ID` found under the `Registered app` view or under the `Settings`.
 
 ## Create an Alert Logic Access Key
+
+### Via the UI
+We recommend creating an access key via the UI by following [These Instructions](https://docs.alertlogic.com/prepare/access-key-management.htm). However, if you prefer you can use the command line instructions below.
+
+### Via the command line
 
 **From the Bash command line in [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart) run the following commands, where `<username>` is your Alert Logic user name and `<password>` is your Alert Logic password:**
 
@@ -107,6 +112,7 @@ Click the button below to start deployment.
 
 1. Provide the following required template parameters and click the `Purchase` button to start a deployment:
    - `Name` - Type the name of the log source to appear in the Alert Logic console.
+   - `Resource Group` - We recommend that you create a new resource group for the collector.
    - `Storage Name` - Any storage account name (that does not currently exist).
    - `Alert Logic Access Key ID` - The `access_key_id` you created above
    - `Alert Logic Secret Key` - The `secret_key` you created above.
