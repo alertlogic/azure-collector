@@ -49,6 +49,7 @@ const _checkEnableAuditStreams = function(master, listedStreams, callback) {
                             if (err) {
                                 return asyncCallback(master.errorStatusFmt('O365000001', `Unable to start subscription ${err}`));
                             } else {
+                                console.log('Started stream: ', stream);
                                 return asyncCallback(null, stream);
                             }
                    });

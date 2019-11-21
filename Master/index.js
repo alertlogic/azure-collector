@@ -30,10 +30,13 @@ module.exports = function (context, AlertlogicMasterTimer) {
     const master = new AlAzureMaster(context, 'o365', pkg.version, healthFuns, null, collectorKeys, {}, APP_FUNCTIONS);
     async.waterfall([
         function(asyncCallback) {
+            console.log("trying register")
             return master.register(_o365RegisterBody(), asyncCallback);
         },
         function(hostId, sourceId, asyncCallback) {
+            console.log("trying checkin")
             return master.checkin(AlertlogicMasterTimer.last, (checkinErr, checkinRes) => {
+                console.log("checkin callback fired", checkinErr, checkinRes);
                 if (checkinErr) {
                     return asyncCallback(`Checkin failed ${checkinErr}`);
                 }
