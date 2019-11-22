@@ -61,15 +61,33 @@ var debugContext = {
 var debugEvent = {
     body:
         [
-            // {
-            //   "contentType": "Audit.AzureActiveDirectory",
-            //   "contentId": "20170813164449279008721$20170813164449279008721$audit_azureactivedirectory$Audit_AzureActiveDirectory$IsFromNotification",
-            //   "contentUri": "https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20170813164449279008721$20170813164449279008721$audit_azureactivedirectory$Audit_AzureActiveDirectory$IsFromNotification",
-            //   "notificationStatus": "Failed",
-            //   "contentCreated": "2017-08-13T23:03:56.050Z",
-            //   "notificationSent": "2017-08-13T23:03:56.050Z",
-            //   "contentExpiration": "2017-08-20T16:44:49.279Z"
-            // }
+           {
+        "contentType": "Audit.AzureActiveDirectory",
+        "contentId": "20191120151429657218680$20191120152254760025243$audit_azureactivedirectory$Audit_AzureActiveDirectory$emea0039$emea0039",
+        "contentUri": "https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20191120151429657218680$20191120152254760025243$audit_azureactivedirectory$Audit_AzureActiveDirectory$emea0039$emea0039",
+        "notificationStatus": "Succeeded",
+        "contentCreated": "2019-11-20T15:32:19.191Z",
+        "notificationSent": "2019-11-20T15:32:19.191Z",
+        "contentExpiration": "2019-11-27T15:14:29.657Z"
+    },
+    {
+        "contentType": "Audit.AzureActiveDirectory",
+        "contentId": "20191120153450196043744$20191120155026415161068$audit_azureactivedirectory$Audit_AzureActiveDirectory$emea0039$emea0039",
+        "contentUri": "https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20191120153450196043744$20191120155026415161068$audit_azureactivedirectory$Audit_AzureActiveDirectory$emea0039$emea0039",
+        "notificationStatus": "Failed",
+        "contentCreated": "2019-11-20T15:50:46.026Z",
+        "notificationSent": "2019-11-20T15:50:46.026Z",
+        "contentExpiration": "2019-11-27T15:34:50.196Z"
+    },
+    {
+        "contentType": "Audit.AzureActiveDirectory",
+        "contentId": "20191120155104689171466$20191120160939971002087$audit_azureactivedirectory$Audit_AzureActiveDirectory$emea0039$emea0039",
+        "contentUri": "https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20191120155104689171466$20191120160939971002087$audit_azureactivedirectory$Audit_AzureActiveDirectory$emea0039$emea0039",
+        "notificationStatus": "Failed",
+        "contentCreated": "2019-11-20T16:12:38.122Z",
+        "notificationSent": "2019-11-20T16:12:38.122Z",
+        "contentExpiration": "2019-11-27T15:51:04.689Z"
+    } 
         ]
 };
 
