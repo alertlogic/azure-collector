@@ -30,6 +30,9 @@ var req = {
 // Local development context
 var debugContext = {
     invocationId: 'ID',
+    executionContext:{
+        invocationId: 'ID'
+    },
     bindings: {
         req
     },
@@ -61,15 +64,15 @@ var debugContext = {
 var debugEvent = {
     body:
         [
-            // {
-            //   "contentType": "Audit.AzureActiveDirectory",
-            //   "contentId": "20170813164449279008721$20170813164449279008721$audit_azureactivedirectory$Audit_AzureActiveDirectory$IsFromNotification",
-            //   "contentUri": "https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20170813164449279008721$20170813164449279008721$audit_azureactivedirectory$Audit_AzureActiveDirectory$IsFromNotification",
-            //   "notificationStatus": "Failed",
-            //   "contentCreated": "2017-08-13T23:03:56.050Z",
-            //   "notificationSent": "2017-08-13T23:03:56.050Z",
-            //   "contentExpiration": "2017-08-20T16:44:49.279Z"
-            // }
+        // {
+        //   "contentType": "Audit.AzureActiveDirectory",
+        //   "contentId": "20170813164449279008721$20170813164449279008721$audit_azureactivedirectory$Audit_AzureActiveDirectory$IsFromNotification",
+        //   "contentUri": "https://manage.office.com/api/v1.0/bf8d32d3-1c13-4487-af02-80dba2236485/activity/feed/audit/20170813164449279008721$20170813164449279008721$audit_azureactivedirectory$Audit_AzureActiveDirectory$IsFromNotification",
+        //   "notificationStatus": "Failed",
+        //   "contentCreated": "2017-08-13T23:03:56.050Z",
+        //   "notificationSent": "2017-08-13T23:03:56.050Z",
+        //   "contentExpiration": "2017-08-20T16:44:49.279Z"
+        // }
         ]
 };
 

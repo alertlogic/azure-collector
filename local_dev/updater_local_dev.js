@@ -38,6 +38,9 @@ var timer = {
 // Local development context
 var debugContext = {
     invocationId: 'ID',
+    executionContext:{
+        invocationId: 'ID'
+    },
     bindings: {
         req
     },
