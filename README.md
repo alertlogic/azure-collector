@@ -98,9 +98,11 @@ curl -X DELETE -H "x-aims-auth-token: $AL_TOKEN" https://api.global-services.glo
 
 ## Download and Deploy the ARM Template 
 
-You can use either the Microsoft Azure portal or a command line to deploy the template. To perform either procedure, you must log into the [Azure portal](https://portal.azure.com). 
+You can use either the Microsoft Azure portal or a command line to deploy the template. To perform either procedure, you must log into the [Azure portal](https://portal.azure.com).
 
-**Note:** The steps in this section require an active Azure subscription. To verify your Azure subscrption, visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade).
+**Note:** The steps in this section require an active Azure subscription. To verify your Azure subscription, visit [Azure subscriptions blade](https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade).
+
+**Note:** This template will deploy a storage account in the active Azure subscription, alongside the function app, in order to successfully collect Office 365 logs.
 
 If your organization uses multiple Active Directory tenants, log into the same tenant used to [Register a New Office 365 Web Application](#register-a-new-office-365-web-application). To find your Office 365 tenant ID, see [Find your Office 365 tenant ID](https://support.office.com/en-gb/article/find-your-office-365-tenant-id-6891b561-a52d-4ade-9f39-b492285e2c9b).
 
@@ -113,7 +115,6 @@ Click the button below to start deployment.
 1. Provide the following required template parameters and click the `Purchase` button to start a deployment:
    - `Name` - Type the name of the log source to appear in the Alert Logic console.
    - `Resource Group` - We recommend that you create a new resource group for the collector.
-   - `Storage Name` - Any storage account name (that does not currently exist).
    - `Alert Logic Access Key ID` - The `access_key_id` you created above
    - `Alert Logic Secret Key` - The `secret_key` you created above.
    - `Alert Logic API endpoint` - Leave the default value (api.global-services.global.alertlogic.com).
