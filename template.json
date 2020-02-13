@@ -5,9 +5,6 @@
         "Name": {
             "type": "String"
         },
-        "Storage Name": {
-            "type": "String"
-        },
         "Alert Logic Access Key ID": {
             "type": "String"
         },
@@ -47,6 +44,7 @@
         "location": "[resourceGroup().location]",
         "resourceGroupName": "[resourceGroup().name]",
         "resourceGroupId": "[resourceGroup().id]",
+        "webAppStorageAccountName": "[take(concat('alertlogicstorage', uniqueString(concat(subscription().tenantId, parameters('Application Name')))), 24)]",
         "roleAssignmentId": "[guid(uniqueString( resourceGroup().id, deployment().name ))]",
         "subscriptionId": "[split(subscription().id, '/')[2]]",
         "tenantId": "[subscription().tenantId]",
@@ -67,11 +65,11 @@
                     "appSettings": [
                         {
                             "name": "AzureWebJobsDashboard",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('Storage Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Name')), '2015-06-15').key1)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('webAppStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('webAppStorageAccountName')), '2015-06-15').key1)]"
                         },
                         {
                             "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('Storage Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Name')), '2015-06-15').key1)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('webAppStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('webAppStorageAccountName')), '2015-06-15').key1)]"
                         },
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -87,7 +85,7 @@
                         },
                         {
                             "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('Storage Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Name')), '2015-06-15').key1)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('webAppStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts',variables('webAppStorageAccountName'), '2015-06-15').key1)]"
                         },
                         {
                             "name": "WEBSITE_CONTENTSHARE",
@@ -150,7 +148,7 @@
                 "clientAffinityEnabled": false
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage Name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('webAppStorageAccountName'))]"
             ],
             "resources": [{
                 "apiVersion": "2015-08-01",
@@ -168,7 +166,7 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "name": "[parameters('Storage Name')]",
+            "name": "[variables('webAppStorageAccountName')]",
             "apiVersion": "2015-06-15",
             "location": "[variables('location')]",
             "properties": {
