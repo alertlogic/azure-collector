@@ -44,7 +44,7 @@
         "location": "[resourceGroup().location]",
         "resourceGroupName": "[resourceGroup().name]",
         "resourceGroupId": "[resourceGroup().id]",
-        "webAppStorageAccountName": "[take(concat('alertlogicstorage', uniqueString(concat(subscription().tenantId, parameters('Application Name')))), 24)]",
+        "webAppStorageAccountName": "[take(concat('alertlogicstorage', uniqueString(concat(subscription().tenantId, parameters('Name')))), 24)]",
         "roleAssignmentId": "[guid(uniqueString( resourceGroup().id, deployment().name ))]",
         "subscriptionId": "[split(subscription().id, '/')[2]]",
         "tenantId": "[subscription().tenantId]",
