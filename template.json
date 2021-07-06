@@ -73,7 +73,7 @@
                         },
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~1"
+                            "value": "~3"
                         },
                         {
                             "name": "SCM_USE_FUNCPACK",
