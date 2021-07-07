@@ -1,6 +1,6 @@
 {
   "name": "azure_collector",
-  "version": "1.4.1",
+  "version": "1.4.0",
   "dependencies": {
     "async": "2.6.2",
     "@azure/ms-rest-js": "2.0.4",
