@@ -73,7 +73,7 @@
                         },
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~1"
+                            "value": "~3"
                         },
                         {
                             "name": "SCM_USE_FUNCPACK",
@@ -93,7 +93,7 @@
                         },
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                            "value": "6.5.0"
+                            "value": "12.13.0"
                         },
                         {
                             "name": "O365_CONTENT_STREAMS",

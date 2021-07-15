@@ -6,6 +6,10 @@ AlertLogic Office 365 Log Collector
 
 # Overview
 
+The instructions in this document are for an older setup of the Microsoft Office 365 log collector.
+If this is your first time setting up Microsoft Office 365 collectors,
+see [Configure Microsoft Office 365 Log Collector](https://docs.alertlogic.com/configure/office365-new-log-collector.htm).
+
 This repository contains the Microsoft Azure web application Node.js source code and an Azure Resource Manager (ARM) template to set up a data collector in Azure, which collects and forwards Microsoft Office 365 log data to Alert Logic Log Management. 
 
 # Installation
