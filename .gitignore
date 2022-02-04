@@ -1,5 +1,14 @@
+# Dev configs/artifacts
 ./local_dev/dev_config.js
+/.nyc_output
+/package-lock.json
+/node_modules
+/coverage
+/test/report.xml
 
+# Editor cruft
 .idea/
-node_modules/
 *.swp
+
+# macOS
+.DS_Store
