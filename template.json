@@ -50,7 +50,9 @@
         "tenantId": "[subscription().tenantId]",
         "contributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
         "repo": "https://github.com/alertlogic/azure-collector.git",
-        "branch": "master"
+        "branch": "master",
+        "nodeRuntimeVersion": "~12",
+        "azureFunctionsExtensionVersion": "~3"
     },
     "resources": [
         {
@@ -73,7 +75,7 @@
                         },
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~3"
+                            "value": "[variables('azureFunctionsExtensionVersion')]"
                         },
                         {
                             "name": "SCM_USE_FUNCPACK",
@@ -93,7 +95,7 @@
                         },
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                            "value": "12.13.0"
+                            "value": "[variables('nodeRuntimeVersion')]"
                         },
                         {
                             "name": "O365_CONTENT_STREAMS",
